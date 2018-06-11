@@ -1,67 +1,58 @@
 <template>
-  <!--<div class="recommend" ref="recommend">-->
-    <!--<scroll ref="scroll" class="recommend-content" :data="discList">-->
-      <!--<div>-->
-        <!--<div v-if="recommends.length" class="slider-wrapper" ref="sliderWrapper">-->
-          <!--<slider>-->
-            <!--<div v-for="item in recommends">-->
-              <!--<a :href="item.linkUrl">-->
-                <!--<img class="needsclick" @load="loadImage" :src="item.picUrl">-->
-              <!--</a>-->
-            <!--</div>-->
-          <!--</slider>-->
-        <!--</div>-->
-        <!--<div class="recommend-list">-->
-          <!--<h1 class="list-title">热门歌单推荐</h1>-->
-          <!--<ul>-->
-            <!--<li @click="selectItem(item)" v-for="item in discList" class="item">-->
-              <!--<div class="icon">-->
-                <!--<img width="60" height="60" v-lazy="item.imgurl">-->
-              <!--</div>-->
-              <!--<div class="text">-->
-                <!--<h2 class="name" v-html="item.creator.name"></h2>-->
-                <!--<p class="desc" v-html="item.dissname"></p>-->
-              <!--</div>-->
-            <!--</li>-->
-          <!--</ul>-->
-        <!--</div>-->
-      <!--</div>-->
-      <!--<div class="loading-container" v-show="!discList.length">-->
-        <!--<loading></loading>-->
-      <!--</div>-->
-    <!--</scroll>-->
-    <!--<router-view></router-view>-->
-  <!--</div>-->
+  <div class="recommend" ref="recommend">
+    <scroll ref="scroll" class="recommend-content" :data="discList">
+      <div>
+        <div v-if="recommends.length" class="slider-wrapper" ref="sliderWrapper">
+          <slider>
+            <div v-for="item in recommends">
+              <a :href="item.linkUrl">
+                <img class="needsclick" @load="loadImage" :src="item.picUrl">
+              </a>
+            </div>
+          </slider>
+        </div>
+        <div class="recommend-list">
+          <h1 class="list-title">热门歌单推荐</h1>
+          <ul>
+            <li @click="selectItem(item)" v-for="item in discList" class="item">
+              <div class="icon">
+                <img width="60" height="60" v-lazy="item.imgurl">
+              </div>
+              <div class="text">
+                <h2 class="name" v-html="item.creator.name"></h2>
+                <p class="desc" v-html="item.dissname"></p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="loading-container" v-show="!discList.length">
+        <loading></loading>
+      </div>
+    </scroll>
+    <router-view></router-view>
+  </div>
 </template>
 
 <script type="text/ecmascript-6">
+import {getRecommand} from '../../common/js/recommand'
+import {ERROR_OK} from  '../../common/js/common'
 export default {
   data () {
     return {
-      getRecommandOption: {
-        g_tk: '5381',
-        uin: 0,
-        format: 'json',
-        inCharset: 'utf-8',
-        outCharset: 'utf-8',
-        notice: 0,
-        platform: 'h5',
-        needNewCode: 1,
-        _: 1528702760044
-      }
+      recommends: []
     }
   },
   name: 'Recommand',
   created () {
-    this.getRecommand()
+    this._getcommand()
   },
   methods: {
-    getRecommand () {
-      this.$http.jsonp('https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg', this.getRecommandOption).then(response => {
-        console.log('succ' + response.body)
-      }, response => {
-        debugger
-        console.log('err' + response.body)
+    _getcommand () {
+      getRecommand().then((res) => {
+        if (res.code === ERROR_OK) {
+          this.recommands = res.data
+        }
       })
     }
   }
