@@ -5,7 +5,7 @@
       </slot>
     </div>
     <div class="dots">
-      <span class="dot" v-for="item in dots"></span>
+      <span class="dot" v-for="(item, index) in dots" v-bind:key="index" v-bind:class="{active : currentPageIndex === index}"></span>
     </div>
   </div>
 </template>
@@ -16,7 +16,8 @@ import BScroll from 'better-scroll'
 export default {
   data () {
     return {
-      dots: []
+      dots: [],
+      currentPageIndex: 0
     }
   },
   props: { // 使用参数控制slider组件
@@ -30,7 +31,7 @@ export default {
     },
     interval: {
       type: Number,
-      default: 4000
+      default: 1000
     }
   },
   mounted () {
@@ -39,6 +40,10 @@ export default {
       this._setSliderWidth()
       this._initDots()
       this._initSlider()
+      // 自动播放
+      if (this.autoPlay) {
+        this._autoPlay()
+      }
     })
   },
   methods: {
@@ -70,9 +75,25 @@ export default {
         },
         click: true
       })
+      this.sliderWapper.on('scrollEnd', () => {
+        let currentPage = this.sliderWapper.getCurrentPage().pageX
+        this.currentPageIndex = currentPage
+        // 在自己手动滚动后，清空一次自动滚动
+        if (this.autoPlay) {
+          clearInterval(this.time)
+          this._autoPlay()
+        }
+      })
     },
     _initDots () {
-      let dots = new Array(this.children)
+      this.dots = new Array(this.children.length)
+    },
+    _autoPlay () {
+      let pageIndex = this.currentPageIndex
+      this.time = setInterval(() => {
+        this.sliderWapper.goToPage((pageIndex++) % 6)
+        console.log('run')
+      }, this.interval)
     }
   }
 }
@@ -82,6 +103,7 @@ export default {
   @import "~common/stylus/variable"
   .slider
     min-height: 1px
+    position: relative;
     .slider-group
       position: relative
       overflow: hidden
