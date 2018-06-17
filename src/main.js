@@ -12,8 +12,7 @@ fastclick.attach(document.body)
 /* eslint-disable no-new */
 
 Vue.use(vueresource)
-router.push({path: '/recommand'})
-
+router.push('/Recommend')
 new Vue({
   el: '#app',
   router,

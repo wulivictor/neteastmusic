@@ -1,12 +1,12 @@
 <template>
   <div class="recommend" ref="recommend">
-    <scroll ref="scroll" class="recommend-content" :data="discList">
+    <!--<scroll ref="scroll" class="recommend-content" :data="discList">-->
       <div>
         <div v-if="recommends.length" class="slider-wrapper" ref="sliderWrapper">
           <slider>
-            <div v-for="item in recommends">
+            <div v-for="(item, index) in recommends" v-bind:key="index">
               <a :href="item.linkUrl">
-                <img class="needsclick" @load="loadImage" :src="item.picUrl">
+                <img class="needsclick"  :src="item.picUrl"> <!-- @load="loadImage"-->
               </a>
             </div>
           </slider>
@@ -14,7 +14,7 @@
         <div class="recommend-list">
           <h1 class="list-title">热门歌单推荐</h1>
           <ul>
-            <li @click="selectItem(item)" v-for="item in discList" class="item">
+            <li @click="selectItem(item)" v-for="(item, index) in discList" class="item" v-bind:key="index">
               <div class="icon">
                 <img width="60" height="60" v-lazy="item.imgurl">
               </div>
@@ -27,23 +27,28 @@
         </div>
       </div>
       <div class="loading-container" v-show="!discList.length">
-        <loading></loading>
+        <!--<loading></loading>-->
       </div>
-    </scroll>
+    <!--</scroll>-->
     <router-view></router-view>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
 import {getRecommand} from '../../common/js/recommand'
-import {ERROR_OK} from  '../../common/js/common'
+import {ERROR_OK} from '../../common/js/common'
+import slider from '../../base/slider.vue'
 export default {
+  name: 'Recommend',
+  components: {
+    slider
+  },
   data () {
     return {
-      recommends: []
+      recommends: [],
+      discList: []
     }
   },
-  name: 'Recommand',
   created () {
     this._getcommand()
   },
@@ -51,7 +56,7 @@ export default {
     _getcommand () {
       getRecommand().then((res) => {
         if (res.code === ERROR_OK) {
-          this.recommands = res.data
+          this.recommends = res.data.slider
         }
       })
     }
