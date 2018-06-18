@@ -1,5 +1,5 @@
 <template>
-  <div ref="scrollref" class="wuli-scroll">
+  <div ref="scrollref">
     <slot></slot>
   </div>
 </template>
