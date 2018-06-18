@@ -1,6 +1,6 @@
 <template>
   <div class="recommend" ref="recommend">
-    <scroll ref="scroll" class="recommend-content">
+    <scroll ref="scroll" class="recommend-content" :data="songList">
       <div>
         <div v-if="recommends.length" class="slider-wrapper" ref="sliderWrapper">
           <slider>
@@ -16,7 +16,7 @@
           <ul>
             <li @click="selectItem(item)" v-for="(item, index) in songList" class="item" v-bind:key="index">
               <div class="icon">
-                <img width="60" height="60" :src="item.picUrl"> <!-- v-lazy="item.imgurl"-->
+                <img width="60" height="60" @load="loadimg" v-lazy="item.picUrl"> <!-- v-lazy="item.imgurl"-->
               </div>
               <div class="text">
                 <h2 class="name" v-html="item.songListAuthor"></h2>
@@ -27,7 +27,7 @@
         </div>
       </div>
       <div class="loading-container" v-show="!songList.length">
-        <!--<loading></loading>-->
+        <loading></loading>
       </div>
     </scroll>
     <router-view></router-view>
@@ -39,11 +39,13 @@ import {getRecommand} from '../../common/js/recommand'
 import {ERROR_OK} from '../../common/js/common'
 import slider from '../../base/slider.vue'
 import scroll from '../../base/scroll.vue'
+import loading from '../../base/loading/loading.vue'
 export default {
   name: 'Recommend',
   components: {
     slider,
-    scroll
+    scroll,
+    loading
   },
   data () {
     return {
@@ -53,7 +55,9 @@ export default {
   },
   created () {
     this._getcommand()
-    this._getSongList()
+    setTimeout(() => {
+      this._getSongList()
+    }, 2000)
   },
   methods: {
     _getcommand () {
@@ -69,6 +73,12 @@ export default {
           this.songList = res.data.songList
         }
       })
+    },
+    loadimg () {
+      if (!this.checkloaded) {
+        this.$refs.scroll.refresh()
+        this.checkloaded = true
+      }
     }
   }
 }

@@ -8,15 +8,49 @@
 import BScroll from 'better-scroll'
 export default {
   name: 'scroll',
+  props: {
+    propsType: {
+      type: Number,
+      default: 1
+    },
+    click: {
+      type: Boolean,
+      default: true
+    },
+    data: {
+      type: Array,
+      default: null
+    }
+  },
   mounted () {
-    this._initScroll()
+    setTimeout(() => {
+      if (!this.scrollWapper) {
+        this._initScroll()
+      }
+    }, 20)
   },
   methods: {
     _initScroll () {
-      debugger
       this.scrollWapper = new BScroll(this.$refs.scrollref, {
-        click: true
+        click: this.click,
+        propsType: this.propsType,
+        enable () {
+          this.scrollWapper && this.scrollWapper.enable()
+        },
+        disable () {
+          this.scrollWapper && this.scrollWapper.disable()
+        },
+        refresh () {
+          this.scrollWapper && this.scrollWapper.refresh()
+        }
       })
+    }
+  },
+  watch: {
+    data () {
+      setTimeout(() => {
+          this.scrollWapper.refresh()
+      }, 20)
     }
   }
 }
