@@ -45,6 +45,14 @@ export default {
         this._autoPlay()
       }
     })
+
+    window.addEventListener('resize', () => {
+      if (this.sliderWapper) {
+        this._setSliderWidth()
+      }
+    })
+  },
+  created () {
   },
   methods: {
     _setSliderWidth () {
@@ -80,7 +88,7 @@ export default {
         this.currentPageIndex = currentPage
         // 在自己手动滚动后，清空一次自动滚动
         if (this.autoPlay) {
-          clearInterval(this.time)
+          clearTimeout(this.time)
           this._autoPlay()
         }
       })
@@ -90,11 +98,13 @@ export default {
     },
     _autoPlay () {
       let pageIndex = this.currentPageIndex
-      this.time = setInterval(() => {
-        this.sliderWapper.goToPage((pageIndex++) % 6)
-        console.log('run')
+      this.time = setTimeout(() => {
+        this.sliderWapper.goToPage((++pageIndex) % 5)
       }, this.interval)
     }
+  },
+  destroyed () {
+    clearTimeout(this.time) // 当从当前页面跳出时，清空定时器资源
   }
 }
 </script>

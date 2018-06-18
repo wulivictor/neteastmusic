@@ -2,7 +2,9 @@
   <div id="app">
     <mheader></mheader>
     <tab></tab>
-    <router-view/>
+    <keep-alive> <!-- 当路由跳转之后，这个组件中的dom不会被清空-->
+      <router-view/>
+    </keep-alive>
   </div>
 </template>
 
