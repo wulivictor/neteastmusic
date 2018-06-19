@@ -35,8 +35,8 @@
 </template>
 
 <script type="text/ecmascript-6">
-import {getRecommand} from '../../common/js/recommand'
-import {ERROR_OK} from '../../common/js/common'
+import {getRecommand} from '../../api/recommand'
+import {ERROR_OK} from '../../api/common'
 import slider from '../../base/slider.vue'
 import scroll from '../../base/scroll.vue'
 import loading from '../../base/loading/loading.vue'
@@ -57,7 +57,7 @@ export default {
     this._getcommand()
     setTimeout(() => {
       this._getSongList()
-    }, 2000)
+    }, 500)
   },
   methods: {
     _getcommand () {

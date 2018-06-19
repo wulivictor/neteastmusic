@@ -3,7 +3,6 @@
     <slot></slot>
   </div>
 </template>
-
 <script type="text/ecmascript-6">
 import BScroll from 'better-scroll'
 export default {
@@ -20,6 +19,10 @@ export default {
     data: {
       type: Array,
       default: null
+    },
+    listenScroll: {
+      type: Boolean,
+      default: false
     }
   },
   mounted () {
@@ -33,23 +36,36 @@ export default {
     _initScroll () {
       this.scrollWapper = new BScroll(this.$refs.scrollref, {
         click: this.click,
-        propsType: this.propsType,
-        enable () {
-          this.scrollWapper && this.scrollWapper.enable()
-        },
-        disable () {
-          this.scrollWapper && this.scrollWapper.disable()
-        },
-        refresh () {
-          this.scrollWapper && this.scrollWapper.refresh()
-        }
+        propsType: this.propsType
       })
+      if (this.listenScroll) {
+        let that = this
+        this.scrollWapper.on('scroll', (pos) => {
+          that.$emit('scroll', pos)
+        })
+      }
+    },
+    enable () {
+      this.scrollWapper && this.scrollWapper.enable()
+    },
+    disable () {
+      this.scrollWapper && this.scrollWapper.disable()
+    },
+    refresh () {
+      this.scrollWapper && this.scrollWapper.refresh()
+    },
+    scrollTo () {
+      this.scrollWapper && this.scrollWapper.scrollTo().apply(this.scrollWapper, arguments)
+    },
+    scrollToElement () {
+      this.scrollWapper && this.scrollWapper.scrollToElement().apply(this.scrollWapper, arguments)
+
     }
   },
   watch: {
     data () {
       setTimeout(() => {
-          this.scrollWapper.refresh()
+        this.scrollWapper.refresh()
       }, 20)
     }
   }

@@ -1,4 +1,4 @@
-import jsonp from '../../common/js/jsonpHandler'
+import jsonp from '../common/js/jsonpHandler'
 import {commonParam, options} from './common'
 
 export function getRecommand () {
