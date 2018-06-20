@@ -1,7 +1,6 @@
 <template>
   <div class="m-header">
     <div class="icon"></div>
-    <h1 class="text">网易云音乐</h1>
     <router-link tag="div" class="mine" to="/user">
       <i class="icon-mine"></i>
     </router-link>
@@ -25,11 +24,11 @@ export default {}
       display: inline-block
       vertical-align: top
       margin-top: 6px
-      width: 30px
-      height: 32px
+      width: 166px
+      height: 35px
       margin-right: 9px
       bg-image('logo')
-      background-size: 30px 32px
+      background-size: 166px 35px
     .text
       display: inline-block
       vertical-align: top
