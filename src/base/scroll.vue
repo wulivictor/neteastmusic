@@ -54,12 +54,11 @@ export default {
     refresh () {
       this.scrollWapper && this.scrollWapper.refresh()
     },
-    scrollTo () {
-      this.scrollWapper && this.scrollWapper.scrollTo().apply(this.scrollWapper, arguments)
+    scrollTo (el, time) {
+      this.scrollWapper && this.scrollWapper.scrollTo(this.scrollWapper, arguments)
     },
-    scrollToElement () {
-      this.scrollWapper && this.scrollWapper.scrollToElement().apply(this.scrollWapper, arguments)
-
+    scrollToElement (el, time) {
+      this.scrollWapper && this.scrollWapper.scrollToElement(el, time)
     }
   },
   watch: {

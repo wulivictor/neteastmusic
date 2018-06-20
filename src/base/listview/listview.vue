@@ -1,7 +1,7 @@
 <template>
-  <scroll :data="data" class="listview">
+  <scroll :data="data" class="listview" ref="listview">
     <ul>
-      <li v-for="(group, index) in data" class="list-group" v-bind:key="index">
+      <li v-for="(group, index) in data" class="list-group" v-bind:key="index" ref="listitem">
         <h2 class="list-group-title">{{group.title}}</h2>
         <ul>
           <li v-for="(item, index) in group.singers" class="list-group-item" v-bind:key="index">
@@ -11,7 +11,7 @@
         </ul>
       </li>
     </ul>
-    <div class="list-shortcut" @touchstart="touchshortcut">
+    <div class="list-shortcut" @touchstart="touchshortcut" @touchmove.stop.prevent="moveshortcut">
       <ul>
         <li v-for="(item, index) in shortcut" v-bind:class="{current : shortcutindex === index}" v-bind:key="index" class="item" :dataindex="index" >
           {{item}}
@@ -23,6 +23,8 @@
 
 <script type="text/ecmascript-6">
 import scroll from '../../base/scroll.vue'
+const ANCHOR_HEIGHT = 18
+
 export default {
   props: {
     data: {
@@ -34,19 +36,37 @@ export default {
   },
   data () {
     return {
-      shortcutindex: 0
+      shortcutindex: -1
     }
   },
   components: {
     scroll
   },
+  created () {
+    this.touch = {}
+  },
   methods: {
     touchshortcut (event) {
       event = event || window.event
       let li = event.targetTouches[0].target
-      let index = li.getAttribute('dataindex')
-      this.shortcutindex = index
-      li.classList.add('current')
+      // 获取触摸到的这个li
+      let index = li.getAttribute('dataindex') - 0
+      this.touch.anchroindex = index
+      this.shortcutindex = this.touch.anchroindex
+
+      let firstTouch = event.touches[0]
+      // 记录当前触摸道德这个li的中坐标
+      this.touch.y1 = firstTouch.pageY
+      this.$refs.listview.scrollToElement(this.$refs.listitem[index], 0)
+    },
+    moveshortcut (event) {
+      event = event || window.event
+      let firstTouch = event.touches[0]
+      this.touch.y2 = firstTouch.pageY
+      let delta = (this.touch.y2 - this.touch.y1) / ANCHOR_HEIGHT | 0
+      let moveTouchIndex = this.touch.anchroindex + delta
+      this.shortcutindex = moveTouchIndex
+      this.$refs.listview.scrollToElement(this.$refs.listitem[moveTouchIndex], 0)
     }
   },
   computed: {
