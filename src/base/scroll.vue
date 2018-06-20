@@ -38,9 +38,11 @@ export default {
         click: this.click,
         propsType: this.propsType
       })
+      // 通过滚动事件再监听 列表的坐标
       if (this.listenScroll) {
         let that = this
         this.scrollWapper.on('scroll', (pos) => {
+          debugger
           that.$emit('scroll', pos)
         })
       }

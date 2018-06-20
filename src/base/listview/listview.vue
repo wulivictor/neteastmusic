@@ -1,5 +1,9 @@
 <template>
-  <scroll :data="data" class="listview" ref="listview">
+  <scroll class="listview" ref="listview"
+          :data="data"
+          :listenScroll=true
+          :propsType=1
+          :click=true>
     <ul>
       <li v-for="(group, index) in data" class="list-group" v-bind:key="index" ref="listitem">
         <h2 class="list-group-title">{{group.title}}</h2>
@@ -47,22 +51,27 @@ export default {
   },
   methods: {
     touchshortcut (event) {
+      // 触碰事件
       event = event || window.event
       let li = event.targetTouches[0].target
       // 获取触摸到的这个li
       let index = li.getAttribute('dataindex') - 0
       this.touch.anchroindex = index
+      // 记录这个shortcut的index
       this.shortcutindex = this.touch.anchroindex
-
       let firstTouch = event.touches[0]
       // 记录当前触摸道德这个li的中坐标
       this.touch.y1 = firstTouch.pageY
+      // 控制左侧列表的滚动
       this.$refs.listview.scrollToElement(this.$refs.listitem[index], 0)
     },
     moveshortcut (event) {
+      // 滑动事件
       event = event || window.event
       let firstTouch = event.touches[0]
+      // 记录这个li的中坐标
       this.touch.y2 = firstTouch.pageY
+      // 移动滑块 - 触碰滑块 的pageY ，再除以每个滑块的宽，就是左侧列表需要移动几个元素
       let delta = (this.touch.y2 - this.touch.y1) / ANCHOR_HEIGHT | 0
       let moveTouchIndex = this.touch.anchroindex + delta
       this.shortcutindex = moveTouchIndex
