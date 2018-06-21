@@ -22,10 +22,12 @@
         </li>
       </ul>
     </div>
+    <loading v-if="!data.length"></loading>
   </scroll>
 </template>
 
 <script type="text/ecmascript-6">
+import loading from '../../base/loading/loading.vue'
 import scroll from '../../base/scroll.vue'
 const ANCHOR_HEIGHT = 18
 const TITLE_HEIGHT = 30
@@ -48,7 +50,8 @@ export default {
     }
   },
   components: {
-    scroll
+    scroll,
+    loading
   },
   created () {
     this.touch = {}
@@ -62,7 +65,7 @@ export default {
         let list2 = list[i + 1]
         if (!list2 || (y >= list1 && y < list2)) {
           this.shortcutindex = i
-          console.log(i)
+          // console.log(i)
           return
         }
       }
