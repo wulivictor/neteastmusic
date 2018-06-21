@@ -22,6 +22,11 @@
         </li>
       </ul>
     </div>
+    <div class="list-fixed" v-show="showTitle">
+      <div class="fixed-title">
+        {{listtitle}}
+      </div>
+    </div>
     <loading v-if="!data.length"></loading>
   </scroll>
 </template>
@@ -29,6 +34,7 @@
 <script type="text/ecmascript-6">
 import loading from '../../base/loading/loading.vue'
 import scroll from '../../base/scroll.vue'
+import vue from 'vue'
 const ANCHOR_HEIGHT = 18
 const TITLE_HEIGHT = 30
 const SINGER_HEIGHT = 70
@@ -45,8 +51,9 @@ export default {
   },
   data () {
     return {
-      shortcutindex: -1,
-      AnchorHeightList: []
+      shortcutindex: 0,
+      AnchorHeightList: [],
+      showTitle: true
     }
   },
   components: {
@@ -58,6 +65,11 @@ export default {
   },
   methods: {
     scroll (pos) {
+      if (pos.y > 0) {
+        this.showTitle = false
+      } else {
+        this.showTitle = true
+      }
       let y = Math.abs(pos.y)
       let list = this.AnchorHeightList
       for (let i = 0; i < list.length; i++) {
@@ -75,8 +87,11 @@ export default {
       event = event || window.event
       let li = event.targetTouches[0].target
       // 获取触摸到的这个li
-      let index = li.getAttribute('dataindex') - 0
+      let index = parseInt(li.getAttribute('dataindex'))
       this.touch.anchroindex = index
+      if (!index && index !== 0) {
+        return
+      }
       // 记录这个shortcut的index
       this.shortcutindex = this.touch.anchroindex
       let firstTouch = event.touches[0]
@@ -103,6 +118,14 @@ export default {
       return this.data.map((group) => {
         return group.title.substr(0, 1)
       })
+    },
+    listtitle () {
+      let titleArray = []
+      titleArray = this.data.map((group) => {
+        return group.title
+      })
+      // console.log(titleArray[this.shortcutindex])
+      return titleArray[this.shortcutindex]
     }
   },
   watch: {
