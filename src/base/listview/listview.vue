@@ -2,8 +2,8 @@
   <scroll class="listview" ref="listview"
           :data="data"
           :listenScroll=true
-          :propsType=1
-          :click=true>
+          :propsType=3
+          :click=true @scroll="scroll">
     <ul>
       <li v-for="(group, index) in data" class="list-group" v-bind:key="index" ref="listitem">
         <h2 class="list-group-title">{{group.title}}</h2>
@@ -28,6 +28,9 @@
 <script type="text/ecmascript-6">
 import scroll from '../../base/scroll.vue'
 const ANCHOR_HEIGHT = 18
+const TITLE_HEIGHT = 30
+const SINGER_HEIGHT = 70
+const PADDING_BOTTOM = 30
 
 export default {
   props: {
@@ -40,7 +43,8 @@ export default {
   },
   data () {
     return {
-      shortcutindex: -1
+      shortcutindex: -1,
+      AnchorHeightList: []
     }
   },
   components: {
@@ -50,6 +54,19 @@ export default {
     this.touch = {}
   },
   methods: {
+    scroll (pos) {
+      let y = Math.abs(pos.y)
+      let list = this.AnchorHeightList
+      for (let i = 0; i < list.length; i++) {
+        let list1 = list[i]
+        let list2 = list[i + 1]
+        if (!list2 || (y >= list1 && y < list2)) {
+          this.shortcutindex = i
+          console.log(i)
+          return
+        }
+      }
+    },
     touchshortcut (event) {
       // 触碰事件
       event = event || window.event
@@ -84,6 +101,21 @@ export default {
         return group.title.substr(0, 1)
       })
     }
+  },
+  watch: {
+    data () {
+      // 当数据传递过来时生成一个左侧列表的纵坐标数组
+      let heightListArray = []
+      let height = 0
+      heightListArray.push(height)
+      let data = this.data
+      for (let i = 0; i < data.length; i++) {
+        height += data[i].singers.length * SINGER_HEIGHT + TITLE_HEIGHT + PADDING_BOTTOM
+        heightListArray.push(height)
+      }
+      this.AnchorHeightList = heightListArray
+    }
+
   }
 }
 </script>

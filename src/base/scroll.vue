@@ -22,7 +22,7 @@ export default {
     },
     listenScroll: {
       type: Boolean,
-      default: false
+      default: true
     }
   },
   mounted () {
@@ -36,13 +36,18 @@ export default {
     _initScroll () {
       this.scrollWapper = new BScroll(this.$refs.scrollref, {
         click: this.click,
-        propsType: this.propsType
+        probeType: this.propsType, // 有时候我们需要知道滚动的位置。当 probeType 为 1 的时候，
+        // 会非实时（屏幕滑动超过一定时间后）派发scroll 事件；当 probeType 为 2 的时候，
+        // 会在屏幕滑动的过程中实时的派发 scroll 事件；当 probeType 为 3 的时候，
+        // 不仅在屏幕滑动的过程中，而且在 momentum 滚动动画运行过程中实时派发 scroll 事件。
+        preventDefault: true
       })
       // 通过滚动事件再监听 列表的坐标
+      let that = this
       if (this.listenScroll) {
-        let that = this
         this.scrollWapper.on('scroll', (pos) => {
-          debugger
+          // 向父组件传递自定义事件
+          // console.log('x:' + pos.x + '\ty:' + pos.y)
           that.$emit('scroll', pos)
         })
       }
