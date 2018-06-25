@@ -34,7 +34,6 @@
 <script type="text/ecmascript-6">
 import loading from '../../base/loading/loading.vue'
 import scroll from '../../base/scroll.vue'
-import vue from 'vue'
 const ANCHOR_HEIGHT = 18
 const TITLE_HEIGHT = 30
 const SINGER_HEIGHT = 70
