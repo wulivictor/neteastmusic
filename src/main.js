@@ -2,6 +2,7 @@ import 'babel-polyfill'
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import store from './store'
 import fastclick from 'fastclick'
 import 'common/style/index.styl'
 import vueresource from 'vue-resource'
@@ -19,5 +20,6 @@ router.push('/Recommend')
 new Vue({
   el: '#app',
   router,
+  store,
   render: h => h(App)
 })

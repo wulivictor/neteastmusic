@@ -10,7 +10,7 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
-import {addClass} from '../api/dom'
+import {addClass} from 'api/dom'
 import BScroll from 'better-scroll'
 export default {
   data () {

@@ -35,11 +35,11 @@
 </template>
 
 <script type="text/ecmascript-6">
-import {getRecommand} from '../../api/recommand'
-import {ERROR_OK} from '../../api/common'
-import slider from '../../base/slider.vue'
-import scroll from '../../base/scroll.vue'
-import loading from '../../base/loading/loading.vue'
+import {getRecommand} from 'api/recommand'
+import {ERROR_OK} from 'api/common'
+import slider from 'base/slider.vue'
+import scroll from 'base/scroll.vue'
+import loading from 'base/loading/loading.vue'
 export default {
   name: 'Recommend',
   components: {
@@ -85,7 +85,7 @@ export default {
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
-@import '../../common/stylus/variable.styl'
+@import '~common/stylus/variable.styl'
 .recommend
   position: fixed
   width: 100%

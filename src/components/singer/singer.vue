@@ -1,14 +1,16 @@
 <template>
   <div class="singer" ref="singer">
-    <listview :data="singer "> </listview>
+    <listview :data="singer" @selectSinger="selectSinger"> </listview>
+    <router-view></router-view>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
-import {getSingerList} from '../../api/getSingerList'
-import {ERROR_OK} from '../../api/common'
-import Singer from '../../common/js/singer.js'
-import listview from '../../base/listview/listview.vue'
+import {getSingerList} from 'api/getSingerList'
+import {ERROR_OK} from 'api/common'
+import Singer from 'common/js/singer.js'
+import listview from 'base/listview/listview.vue'
+import {mapMutations} from 'vuex' // 语法糖
 const HOT_NAME = '热门歌手'
 const HOT_SINGER_LENGTH = 10
 export default {
@@ -24,6 +26,15 @@ export default {
     this._getSingerList()
   },
   methods: {
+    ...mapMutations({
+      setSinger: 'SET_SINGER'
+    }),
+    selectSinger (singer) {
+      this.$router.push({
+        path: `/singer/${singer.id}`
+      })
+      this.setSinger(singer)
+    },
     _getSingerList () {
       let that = this
       getSingerList().then((response) => {

@@ -8,7 +8,7 @@
       <li v-for="(group, index) in data" class="list-group" v-bind:key="index" ref="listitem">
         <h2 class="list-group-title">{{group.title}}</h2>
         <ul>
-          <li v-for="(item, index) in group.singers" class="list-group-item" v-bind:key="index">
+          <li @click="selectItem(item)" v-for="(item, index) in group.singers" class="list-group-item" v-bind:key="index">
             <img v-lazy="item.avatar" class="avatar">
             <span class="name">{{item.name}}</span>
           </li>
@@ -32,8 +32,8 @@
 </template>
 
 <script type="text/ecmascript-6">
-import loading from '../../base/loading/loading.vue'
-import scroll from '../../base/scroll.vue'
+import loading from 'base/loading/loading.vue'
+import scroll from 'base/scroll.vue'
 const ANCHOR_HEIGHT = 18
 const TITLE_HEIGHT = 30
 const SINGER_HEIGHT = 70
@@ -63,6 +63,9 @@ export default {
     this.touch = {}
   },
   methods: {
+    selectItem (item) {
+      this.$emit('selectSinger', item)
+    },
     scroll (pos) {
       if (pos.y > 0) {
         this.showTitle = false
