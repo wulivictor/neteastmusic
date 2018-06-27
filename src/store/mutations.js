@@ -1,4 +1,4 @@
-// 放置设置值的方法
+// 同步操作状态
 import * as types from './mutation-types'
 
 const mutations = {

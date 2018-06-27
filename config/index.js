@@ -10,7 +10,26 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: { // 使用webpack中的反向代理来实现跨域
+      '/api/getDiscList': {
+        target: 'https://c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg',
+        changeOrigin:true,
+        bypass: function (req, res, proxyOptions) {
+          req.header.referencer = 'https://c.y.qq.com'
+          req.header.host = 'c.y.qq.com'
+        },
+        pathRewrite: {
+          '^/api/getDiscList': ''
+        }
+      },
+      '/api/music': {
+        target: 'https://c.y.qq.com/base/fcgi-bin/fcg_music_express_mobile3.fcg',
+        changeOrigin:true,
+        pathRewrite: {
+          '^/api/music': ''
+        }
+      }
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
@@ -74,3 +93,4 @@ module.exports = {
     bundleAnalyzerReport: process.env.npm_config_report
   }
 }
+

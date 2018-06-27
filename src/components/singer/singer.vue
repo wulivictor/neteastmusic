@@ -6,7 +6,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import {getSingerList} from 'api/getSingerList'
+import {getSingerList} from 'api/singer'
 import {ERROR_OK} from 'api/common'
 import Singer from 'common/js/singer.js'
 import listview from 'base/listview/listview.vue'

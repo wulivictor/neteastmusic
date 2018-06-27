@@ -1,0 +1,66 @@
+{
+  Flisten_count1: "210000000",
+  Fupload_time: "2018-05-16 16:15:03",
+  index: 1,
+  isnew: 1,
+  listenCount: 0,
+  musicData: {
+    albumdesc: "",
+    albumid: 4048580,
+    albummid: "002GH0pj1uSvV9",
+    albumname: "肆无忌惮",
+    alertid: 11,
+    belongCD: 1,
+    cdIdx: 0,
+    interval: 259,
+    isonly: 0,
+    label: "0",
+    msgid: 0,
+    pay: {
+      payalbum: 0,
+      payalbumprice: 0,
+      paydownload: 0,
+      payinfo: 0,
+      payplay: 0,
+      paytrackmouth: 0,
+      paytrackprice: 0,
+      timefree: 0
+    },
+    preview: {
+      trybegin: 0,
+      tryend: 0,
+      trysize: 0
+    },
+    rate: 31,
+    singer: [
+      {
+        id: 5062,
+        mid: "002J4UUk29y8BY",
+        name: "薛之谦"
+      }
+    ],
+    size128: 4160145,
+    size320: 10400067,
+    size5_1: 0,
+    sizeape: 22984223,
+    sizeflac: 23087774,
+    sizeogg: 5409461,
+    songid: 213942399,
+    songmid: "000QCwge3B6Ad1",
+    songname: "肆无忌惮",
+    songorig: "肆无忌惮",
+    songtype: 0,
+    strMediaMid: "000QCwge3B6Ad1",
+    stream: 13,
+    switch: 605971,
+    type: 0,
+    vid: "m00264oe1u6"
+  },
+  playurl: "",
+  price: 320,
+  vid: {
+    Fmv_id: "1464576",
+    Fstatus: "1",
+    Fvid: "m00264oe1u6"
+  }
+}
