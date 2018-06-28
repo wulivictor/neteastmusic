@@ -8,11 +8,11 @@ export function get (url, data) {
       'async': true,
       'url': url,
       'data': data,
-      'success': res => {
+      'success': (res) => {
         resovle(res)
       },
-      'error': err => {
-        reject(err)
+      'error': (res) => {
+        reject(res)
       }
     })
   })

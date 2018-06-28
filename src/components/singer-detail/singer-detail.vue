@@ -1,62 +1,61 @@
 <template>
   <transition name="slide">
-    <music-list :title="title" :bgImage="bgImage" :songs:="songs" v-if="songs"></music-list>.
+    <music-list :songs:="songs" :title="title" :bgimage="bgimage"  :rank="true" v-if="flag"></music-list>.
   </transition>
 </template>
 <script type="text/ecmascript-6">
 import {ERROR_OK} from 'api/common'
 import {getSonglist} from 'api/song'
 import {createSong} from 'common/js/song'
-// import $ from 'jquery'
-import musiclist from 'components/music-list/music-list.vue'
+import MusicList from 'components/music-list/music-list.vue'
+import {mapMutations} from 'vuex'
 
 export default {
   components: {
-    'music-list': musiclist
+    MusicList
   },
-  data () {
+  data() {
     return {
-      songs: []
+      songs: [],
+      flag: false
     }
   },
   computed: {
-    singer () {
+    singer() {
       return this.$store.state.singer
     },
-    title () {
+    title() {
       return this.singer.name
     },
-    bgImage () {
-      // 拼凑高清的avatar
-      let url = this.singer.avatar
-      let num = url.lastIndexOf('/')
-      return url.substring(0, num + 6) + '300x300' + url.substring(num + 13, url.length)
+    bgimage() {
+      let image = 'http://y.gtimg.cn/music/photo_new/T001R300x300M000' + this.singer.id + '.jpg?max_age=2592000'
+      return image
     }
   },
-  created () {
-    // console.log(this.singer)
-  },
-  mounted () {
+  mounted() {
     let id = this.singer.id
     setTimeout(() => {
       this._getSonglist(id)
-    }, 30)
+    }, 60)
   },
   methods: {
-    _normalizeSongs (list) {
+    ...mapMutations({
+      setSongs: 'SET_SONGS'
+    }),
+    _normalizeSongs(list) {
       if (!list) {
         return
       }
       let ret = []
       list.forEach(item => {
-        let { musicData } = item
+        let {musicData} = item
         if (musicData.songmid) {
           ret.push(createSong(musicData))
         }
       })
       return ret
     },
-    _getSonglist (singerId) {
+    _getSonglist(singerId) {
       if (!this.singer.id) {
         this.$route.push({
           path: '/singer'
@@ -71,8 +70,16 @@ export default {
           }
           let songs = this._normalizeSongs(list)
           this.songs = songs
+          this.setSongs(songs)
         }
       })
+    }
+  },
+  watch: {
+    songs (newvue, oldvue) {
+      if (newvue) {
+        this.flag = true
+      }
     }
   }
 }
@@ -85,12 +92,4 @@ export default {
   transition all .3s
 .slide-enter,.slide-leave-to
   transform translate3d(100%, 0, 0)
-
-.singer-detail
-  position fixed
-  top 0
-  left 0
-  right 0
-  bottom 0
-  background-color $color-background
-</style>
+ </style>

@@ -1,23 +1,23 @@
 <template>
   <div class="music-list">
-    <div class="back">
+    <div class="back" @click="back">
       <i class="icon-back"></i>
     </div>
     <h1 class="title" v-html="title"></h1>
-    <div class="bg-image"  ref="bgImage" :style="{background: 'url('+ bgImage + ')'}">
+    <div class="bg-image" :style="bgStyle" ref="bgImage">
       <div class="play-wrapper">
-        <div ref="playBtn" class="play">
-          <i class="icon-play"></i>
+        <div ref="playBtn" v-show="songs.length>0" class="play">
+          <i class="icon-play">1</i>
           <span class="text">随机播放全部</span>
         </div>
       </div>
       <div class="filter" ref="filter"></div>
     </div>
     <div class="bg-layer" ref="layer"></div>
-    <scroll :data="songs" @scroll="scroll"
+    <scroll :data="songs"
             :listen-scroll="listenScroll" :probe-type="probeType" class="list" ref="list">
       <div class="song-list-wrapper">
-        <songlist :songs="songs"></songlist>
+        <song-list :songs="songs" :rank="rank"></song-list>
       </div>
       <div v-show="!songs.length" class="loading-container">
         <loading></loading>
@@ -27,33 +27,15 @@
 </template>
 
 <script type="text/ecmascript-6">
-import loading from '../../base/loading/loading'
-import scroll from '../../base/scroll'
-import songlist from '../../base/song-list/song-list'
+import Scroll from 'base/scroll'
+import Loading from 'base/loading/loading'
+import SongList from 'base/song-list/song-list'
+import {mapMutations} from 'vuex'
 export default {
-  data () {
-    return {
-    }
-  },
-  created () {
-    this.probeType = 3
-    this.listenScroll = true
-  },
-  components: {
-    scroll,
-    loading,
-    songlist
-  },
   props: {
-    bgImage: {
+    bgimage: {
       type: String,
       default: ''
-    },
-    songs: {
-      type: Array,
-      default () {
-        return []
-      }
     },
     title: {
       type: String,
@@ -64,18 +46,50 @@ export default {
       default: false
     }
   },
+  data () {
+    return {
+      scrollY: 0,
+      songlist: []
+    }
+  },
+  computed: {
+    bgStyle () {
+      return `background-image:url(${this.bgimage})`
+    },
+    songs () {
+      return this.$store.state.songs
+    }
+  },
+  created () {
+    this.probeType = 3
+    this.listenScroll = true
+  },
   methods: {
     scroll (pos) {
-      // 监听滑动
-      debugger
+      this.scrollY = pos.y
     },
-    selectItem () {
-      // 选择歌曲
+    back () {
+      this.$router.back()
+    },
+    selectItem (item, index) {
+      this.selectPlay({
+        list: this.songs,
+        index
+      })
+    }
+  },
+  components: {
+    Scroll,
+    Loading,
+    SongList
+  },
+  watch: {
+    songs (newvue) {
+      this.songlist = newvue
+      debugger
     }
   }
-
 }
-
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
@@ -111,6 +125,7 @@ export default {
       line-height: 40px
       font-size: $font-size-large
       color: $color-text
+      z-index: 41
     .bg-image
       position: relative
       width: 100%
@@ -118,6 +133,7 @@ export default {
       padding-top: 70%
       transform-origin: top
       background-size: cover
+      z-index: 40
       .play-wrapper
         position: absolute
         bottom: 20px
