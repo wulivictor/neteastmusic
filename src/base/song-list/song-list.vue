@@ -7,7 +7,7 @@
         </div>
         <div class="content">
           <h2 class="name">{{song.name}}</h2>
-          <p class="desc">{{getDesc(song)}}</p>
+          <p class="desc">{{song.id}}</p>
         </div>
       </li>
     </ul>
@@ -27,6 +27,9 @@ export default {
       type: Boolean,
       default: false
     }
+  },
+  filter: {
+
   }
 }
 </script>
