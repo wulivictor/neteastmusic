@@ -24,6 +24,9 @@ export default {
       }
     }
   },
+  created () {
+    this.rank = true
+  },
   components: {
 
   }

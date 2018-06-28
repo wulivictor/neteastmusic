@@ -1,6 +1,6 @@
 <template>
   <transition name="slide">
-    <musiclist :title="title" :bgImage="bgImage" :songs:="songlist"></musiclist>.
+    <music-list :title="title" :bgImage="bgImage" :songs:="songs" v-if="songs"></music-list>.
   </transition>
 </template>
 <script type="text/ecmascript-6">
@@ -12,12 +12,11 @@ import musiclist from 'components/music-list/music-list.vue'
 
 export default {
   components: {
-    musiclist
+    'music-list': musiclist
   },
   data () {
     return {
-      songlist: [],
-      flag: false
+      songs: []
     }
   },
   computed: {
@@ -71,7 +70,7 @@ export default {
             return
           }
           let songs = this._normalizeSongs(list)
-          this.songlist = songs
+          this.songs = songs
         }
       })
     }

@@ -4,7 +4,7 @@
       <i class="icon-back"></i>
     </div>
     <h1 class="title" v-html="title"></h1>
-    <div class="bg-image"  ref="bgImage" :style="{background: 'url('+ bgImage + ')',backgroundSize: 'cover'}">
+    <div class="bg-image"  ref="bgImage" :style="{background: 'url('+ bgImage + ')'}">
       <div class="play-wrapper">
         <div ref="playBtn" class="play">
           <i class="icon-play"></i>
@@ -17,7 +17,7 @@
     <scroll :data="songs" @scroll="scroll"
             :listen-scroll="listenScroll" :probe-type="probeType" class="list" ref="list">
       <div class="song-list-wrapper">
-        <songlist :songs="songs"  @select="selectItem"></songlist>
+        <songlist :songs="songs"></songlist>
       </div>
       <div v-show="!songs.length" class="loading-container">
         <loading></loading>
@@ -27,15 +27,17 @@
 </template>
 
 <script type="text/ecmascript-6">
-import loading from 'base/loading/loading'
-import scroll from 'base/scroll'
-import songlist from 'base/song-list/song-list'
+import loading from '../../base/loading/loading'
+import scroll from '../../base/scroll'
+import songlist from '../../base/song-list/song-list'
 export default {
   data () {
     return {
-      probeType: 3,
-      listenScroll: true
     }
+  },
+  created () {
+    this.probeType = 3
+    this.listenScroll = true
   },
   components: {
     scroll,
@@ -43,7 +45,7 @@ export default {
     songlist
   },
   props: {
-    title: {
+    bgImage: {
       type: String,
       default: ''
     },
@@ -53,9 +55,13 @@ export default {
         return []
       }
     },
-    bgImage: {
+    title: {
       type: String,
       default: ''
+    },
+    rank: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
