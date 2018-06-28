@@ -1,31 +1,47 @@
 <template>
   <transition name="slide">
-    <div class="singer-detail"></div>
+    <musiclist :title="title" :bgImage="bgImage" :songs:="songlist"></musiclist>.
   </transition>
 </template>
 <script type="text/ecmascript-6">
-import {getSingerDetail} from '../../api/singer'
-import {ERROR_OK} from '../../api/common'
-import {getMusic} from '../../api/song'
-import {createSong} from '../../common/js/song'
-import $ from 'jquery'
+import {ERROR_OK} from 'api/common'
+import {getSonglist} from 'api/song'
+import {createSong} from 'common/js/song'
+// import $ from 'jquery'
+import musiclist from 'components/music-list/music-list.vue'
 
 export default {
+  components: {
+    musiclist
+  },
   data () {
     return {
-      songlist: {}
+      songlist: [],
+      flag: false
     }
   },
   computed: {
     singer () {
       return this.$store.state.singer
+    },
+    title () {
+      return this.singer.name
+    },
+    bgImage () {
+      // 拼凑高清的avatar
+      let url = this.singer.avatar
+      let num = url.lastIndexOf('/')
+      return url.substring(0, num + 6) + '300x300' + url.substring(num + 13, url.length)
     }
   },
   created () {
     // console.log(this.singer)
   },
   mounted () {
-    setTimeout((this.getsingerDetail(this.singer.id)), 30)
+    let id = this.singer.id
+    setTimeout(() => {
+      this._getSonglist(id)
+    }, 30)
   },
   methods: {
     _normalizeSongs (list) {
@@ -35,33 +51,27 @@ export default {
       let ret = []
       list.forEach(item => {
         let { musicData } = item
-        if (musicData.songid && musicData.songmid) {
-          getMusic(musicData.songmid).then((res) => {
-            res = $.parseJSON(res)
-            if (res.code === ERROR_OK) {
-              const filename = res.data.items[0].filename
-              const svkey = res.data.items
-              const songVkey = svkey[0].vkey
-              const newSong = createSong(musicData, songVkey, filename)
-              ret.push(newSong)
-            }
-          })
+        if (musicData.songmid) {
+          ret.push(createSong(musicData))
         }
       })
-      console.log(ret)
       return ret
     },
-    getsingerDetail (singerId) {
+    _getSonglist (singerId) {
       if (!this.singer.id) {
         this.$route.push({
           path: '/singer'
         })
         return
       }
-      getSingerDetail(singerId).then((response) => {
+      getSonglist(singerId).then((response) => {
         if (ERROR_OK === response.code) {
-          this.songlist = this._normalizeSongs(response.data.list)
-          // console.log(this.songlist)
+          let list = response.data.list
+          if (!list) {
+            return
+          }
+          let songs = this._normalizeSongs(list)
+          this.songlist = songs
         }
       })
     }
