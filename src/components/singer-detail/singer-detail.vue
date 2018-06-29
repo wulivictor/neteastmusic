@@ -14,35 +14,35 @@ export default {
   components: {
     MusicList
   },
-  data() {
+  data () {
     return {
       songs: [],
       flag: false
     }
   },
   computed: {
-    singer() {
+    singer () {
       return this.$store.state.singer
     },
-    title() {
+    title () {
       return this.singer.name
     },
-    bgimage() {
+    bgimage () {
       let image = 'http://y.gtimg.cn/music/photo_new/T001R300x300M000' + this.singer.id + '.jpg?max_age=2592000'
       return image
     }
   },
-  mounted() {
+  mounted () {
     let id = this.singer.id
     setTimeout(() => {
       this._getSonglist(id)
-    }, 60)
+    }, 30)
   },
   methods: {
     ...mapMutations({
       setSongs: 'SET_SONGS'
     }),
-    _normalizeSongs(list) {
+    _normalizeSongs (list) {
       if (!list) {
         return
       }
@@ -55,7 +55,7 @@ export default {
       })
       return ret
     },
-    _getSonglist(singerId) {
+    _getSonglist (singerId) {
       if (!this.singer.id) {
         this.$route.push({
           path: '/singer'
@@ -84,7 +84,6 @@ export default {
   }
 }
 </script>
-
 <style scoped lang="stylus" rel="stylesheet/stylus">
 @import "~common/stylus/variable.styl"
 
