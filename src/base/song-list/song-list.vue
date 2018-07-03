@@ -1,9 +1,9 @@
 <template>
   <div class="song-list">
     <ul>
-      <li @click="selectItem(song, index)" class="item" v-for="(song, index) in songs">
-        <div class="rank" v-show="rank">
-          <span></span>
+      <li @click="selectItem(song, index)" class="item" v-for="(song, index) in songs" v-bind:key="index">
+        <div class="rank" v-show="false">
+          <span>{{index+1}}</span>
         </div>
         <div class="content">
           <h2 class="name">{{song.name}}</h2>
@@ -29,6 +29,9 @@ export default {
     }
   },
   methods: {
+    selectItem (song, index) {
+      this.$emit('select', song, index)
+    },
     desc (song) {
       return `${song.singer}   ${song.album}`
     }
@@ -47,6 +50,7 @@ export default {
     box-sizing: border-box
     height: 64px
     font-size: $font-size-medium
+    border-bottom 1px solid rgba(255,255,255,0.1)
     .rank
       flex: 0 0 25px
       width: 25px

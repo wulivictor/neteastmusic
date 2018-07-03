@@ -17,7 +17,7 @@
     <scroll :data="songs" @scroll="scrolllsit"
             :listen-scroll="listenScroll" :propsType="probeType" class="list" ref="list">   <!--这个list为固定定位，只不过当滑动时，超过的内容没有overflow-->
       <div class="song-list-wrapper">
-        <song-list :songs="songs" :rank="rank"></song-list>
+        <song-list :songs="songs" :rank="rank" @select="selectItem"></song-list>
       </div>
       <div v-show="!songs.length" class="loading-container">
         <loading></loading>
@@ -29,6 +29,8 @@
 import Scroll from 'base/scroll'
 import Loading from 'base/loading/loading'
 import SongList from 'base/song-list/song-list'
+import {mapActions} from 'vuex'
+import {mapGetters} from 'vuex'
 // import {mapMutations} from 'vuex'
 export default {
   props: {
@@ -52,12 +54,16 @@ export default {
     }
   },
   computed: {
+    ...mapGetters([
+      'songs'
+    ]),
     bgStyle () {
       return `background-image:url(${this.bgimage})`
-    },
-    songs () {
-      return this.$store.state.songs
     }
+    // ,
+    // songs () {
+    //   return this.$store.state.songs
+    // }
   },
   created () {
     this.probeType = 3
@@ -65,34 +71,26 @@ export default {
   },
   mounted () {
     // 获取背景图的高度，当画到一定的高度时layer不在位移
-    this.imageHeight = this.$refs.bgImage.offsetHeight
     // console.log(this.imageHeight)
-    // list和layer的位置没对齐，计算位置
-    this.fixHeight = this.fixHeight()
   },
   methods: {
-    fixHeight () {
-      let width = window.innerWidth
-      let height = window.innerHeight
-      let fixHeight = height - width * 0.7 - height * 0.6
-      return fixHeight
+    selectItem (song, index) {
+      this.selectPlay({
+        list: this.songlist,
+        index: index
+      })
     },
+    // 监听scroll组件滑动的自定义事件
     scrolllsit (pos) {
+      // 向上滑动
       this.scrollY = pos.y
-      let maxScrollMove = Math.abs(this.scrollY) <= this.imageHeight + this.fixHeight
-      if (maxScrollMove) {
-        this.$refs.layer.style.webkitTransform = 'translate(0px,' + this.scrollY + 'px) scale(1) translateZ(0px)'
-      }
     },
     back () {
       this.$router.back()
     },
-    selectItem (item, index) {
-      this.selectPlay({
-        list: this.songs,
-        index
-      })
-    }
+    ...mapActions([
+      'selectPlay'
+    ])
   },
   components: {
     Scroll,
@@ -102,7 +100,12 @@ export default {
   watch: {
     songs (newvue) {
       this.songlist = newvue
-      debugger
+    },
+    scrollY (newvue) {
+      let flag = this.scrollY < 0 && (Math.abs(this.scrollY) <= this.imageHeight - 50)
+      if (flag) {
+        this.$refs.layer.style.webkitTransform = 'translate3d(0px,' + this.scrollY + 'px, 0px)'
+      }
     }
   }
 }

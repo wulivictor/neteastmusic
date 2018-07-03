@@ -2,7 +2,7 @@ import $ from 'jquery'
 // import {commonParam} from '../../api/common'
 
 export function get (url, data) {
-  return new Promise((resovle, reject) => {
+  return Promise((resovle, reject) => {
     $.ajax({
       'type': 'get',
       'async': true,
