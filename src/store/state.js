@@ -13,5 +13,4 @@ const state = {
   mode: playMode.sequence,
   currentIndex: -1 // 当前播放歌曲在sequence中的索引
 }
-
 export default state

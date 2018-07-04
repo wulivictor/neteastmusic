@@ -13,10 +13,9 @@ export default {
       'playlist'
     ])
   },
+  created () {
+  },
   watch: {
-    fullScreen (newvue) {
-      alert(newvue)
-    }
   }
 }
 </script>

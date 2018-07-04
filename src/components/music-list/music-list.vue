@@ -15,7 +15,8 @@
     </div>
     <div class="bg-layer" ref="layer"></div>        <!-- 这个隔层为相对布局，高度为100%，和image并列，有一部分没娴熟出来，背景和list的颜色是一样的 -->
     <scroll :data="songs" @scroll="scrolllsit"
-            :listen-scroll="listenScroll" :propsType="probeType" class="list" ref="list">   <!--这个list为固定定位，只不过当滑动时，超过的内容没有overflow-->
+            :listen-scroll="listenScroll"
+            :propsType="probeType" class="list" ref="list">   <!--这个list为固定定位，只不过当滑动时，超过的内容没有overflow-->
       <div class="song-list-wrapper">
         <song-list :songs="songs" :rank="rank" @select="selectItem"></song-list>
       </div>
@@ -29,9 +30,7 @@
 import Scroll from 'base/scroll'
 import Loading from 'base/loading/loading'
 import SongList from 'base/song-list/song-list'
-import {mapActions} from 'vuex'
-import {mapGetters} from 'vuex'
-// import {mapMutations} from 'vuex'
+import {mapActions, mapGetters} from 'vuex'
 export default {
   props: {
     bgimage: {
@@ -60,10 +59,6 @@ export default {
     bgStyle () {
       return `background-image:url(${this.bgimage})`
     }
-    // ,
-    // songs () {
-    //   return this.$store.state.songs
-    // }
   },
   created () {
     this.probeType = 3
@@ -76,7 +71,7 @@ export default {
   methods: {
     selectItem (song, index) {
       this.selectPlay({
-        list: this.songlist,
+        list: this.songs,
         index: index
       })
     },
