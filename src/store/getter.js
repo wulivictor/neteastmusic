@@ -4,7 +4,7 @@ export const singer = state => state.singer
 
 export const songs = state => state.songs
 
-export const playing = state => state.playing
+export const playState = state => state.playState
 
 export const fullScreen = state => state.fullScreen
 

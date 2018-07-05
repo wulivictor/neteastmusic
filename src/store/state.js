@@ -6,7 +6,7 @@ const state = {
   singer: {},
   // music-list下面的songs
   songs: [],
-  playing: false,
+  playState: false,
   fullScreen: false,
   playlist: [],
   sequencelist: [],

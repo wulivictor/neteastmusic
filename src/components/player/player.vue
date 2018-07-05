@@ -1,21 +1,118 @@
 <template>
-<div class="player" v-show="playlist.length">
-  <div class="normal-player" v-show="fullScreen">播放器</div>
-  <div class="mini-player" v-show="!fullScreen"></div>
+  <div class="player" v-show="playlist.length>0">
+    <transition name="normal">
+    <div class="normal-player" v-show="fullScreen">
+      <div class="background">
+        <img :src="currentSong.image" width="100%" height="100%">
+      </div>
+      <div class="top">
+        <div class="back" @click="back()">
+          <i class="icon-back"></i>
+        </div>
+        <h1 class="title" v-html="currentSong.name"></h1>
+        <h2 class="subtitle" v-html="currentSong.singer"></h2>
+      </div>
+      <div class="middle">
+        <div class="middle-l" ref="middleL">
+          <div class="cd-wrapper" ref="cdWrapper">
+            <div class="cd">
+              <img class="image" :src="currentSong.image">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bottom">
+        <div class="operators">
+          <div class="icon i-left">
+            <i class="icon-sequence"></i>
+          </div>
+          <div class="icon i-left">
+            <i class="icon-prev"></i>
+          </div>
+          <div class="icon i-center">
+            <i @click="togglePlaying" :class="playState ? 'icon-pause' : 'icon-play'"></i>
+          </div>
+          <div class="icon right">
+            <i class="icon-next"></i>
+          </div>
+          <div class="icon right">
+            <i class="icon icon-not-favorite"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </transition>
+  <transition name="mini">
+    <div class="mini-player" v-show="!fullScreen" @click="into()">
+      <div class="icon">
+        <img width="40" height="40" :src="currentSong.image">
+      </div>
+      <div class="text">
+        <h2 class="name" v-html="currentSong.name"></h2>
+        <p class="desc" v-html="currentSong.singer"></p>
+      </div>
+      <div class="control">
+        <i @click.stop="togglePlaying" :class="miniicon"></i>
+      </div>
+      <div class="control">
+        <i class="icon-playlist"></i>
+      </div>
+    </div>
+  </transition>
+    <audio :src="currentSong.url" ref="audio"></audio>
 </div>
 </template>
 <script type="text/ecmascript-6">
-import {mapGetters} from 'vuex'
+import {mapGetters, mapMutations} from 'vuex'
+import animation from 'create-keyframe-animation'
 export default {
+  data () {
+    return {
+    }
+  },
   computed: {
     ...mapGetters([
       'fullScreen',
-      'playlist'
-    ])
+      'playlist',
+      'currentSong',
+      'playState'
+    ]),
+    miniicon () {
+      if (this.playState) {
+        return 'icon-pause-mini'
+      } else {
+        return 'icon-play-mini'
+      }
+    }
   },
   created () {
+    this.setplayState(true)
+  },
+  methods: {
+    back () {
+      this.setfullScreen(false)
+    },
+    into () {
+      this.setfullScreen(true)
+    },
+    ...mapMutations({
+      setfullScreen: 'SET_FULLSCREEN',
+      setplayState: 'SET_PLAY_STATE'
+    }),
+    togglePlaying () {
+      this.setplayState(!this.playState)
+    }
   },
   watch: {
+    currentSong () {
+      this.$nextTick(() => {
+        this.$refs.audio.play()
+        this.setplayState(true)
+      })
+    },
+    playState (flag) {
+      flag ? this.$refs.audio.play() : this.$refs.audio.pause()
+    }
   }
 }
 </script>
@@ -247,7 +344,7 @@ export default {
         padding: 0 10px
         .icon-play-mini, .icon-pause-mini, .icon-playlist
           font-size: 30px
-          color: $color-theme-d
+          color: $color-theme
         .icon-mini
           font-size: 32px
           position: absolute

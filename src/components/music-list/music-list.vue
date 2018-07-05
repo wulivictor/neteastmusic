@@ -97,6 +97,7 @@ export default {
       this.songlist = newvue
     },
     scrollY (newvue) {
+      this.imageHeight = this.$refs.bgImage.offsetHeight
       let flag = this.scrollY < 0 && (Math.abs(this.scrollY) <= this.imageHeight - 50)
       if (flag) {
         this.$refs.layer.style.webkitTransform = 'translate3d(0px,' + this.scrollY + 'px, 0px)'
