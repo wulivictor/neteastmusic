@@ -15,25 +15,32 @@
       <div class="middle">
         <div class="middle-l" ref="middleL">
           <div class="cd-wrapper" ref="cdWrapper">
-            <div class="cd">
+            <div class="cd" :class="playState ? 'play' : 'pause'">
               <img class="image" :src="currentSong.image">
             </div>
           </div>
         </div>
       </div>
       <div class="bottom">
+        <div class="progress-wrapper">
+          <span class="time time-l">{{currentTime | filtertime}}</span>
+          <div class="progress-bar-wrapper">
+            <progressbar></progressbar>
+          </div>
+          <span class="time time-r">{{currentSong.duration | filtertime}}</span>
+          </div>
         <div class="operators">
           <div class="icon i-left">
             <i class="icon-sequence"></i>
           </div>
           <div class="icon i-left">
-            <i class="icon-prev"></i>
+            <i class="icon-prev" @click="prev"></i>
           </div>
           <div class="icon i-center">
             <i @click="togglePlaying" :class="playState ? 'icon-pause' : 'icon-play'"></i>
           </div>
           <div class="icon right">
-            <i class="icon-next"></i>
+            <i class="icon-next" @click="next"></i>
           </div>
           <div class="icon right">
             <i class="icon icon-not-favorite"></i>
@@ -45,7 +52,7 @@
   <transition name="mini">
     <div class="mini-player" v-show="!fullScreen" @click="into()">
       <div class="icon">
-        <img width="40" height="40" :src="currentSong.image">
+        <img width="40" height="40" :src="currentSong.image" :class="playState ? 'play' : 'pause'">
       </div>
       <div class="text">
         <h2 class="name" v-html="currentSong.name"></h2>
@@ -59,15 +66,17 @@
       </div>
     </div>
   </transition>
-    <audio :src="currentSong.url" ref="audio"></audio>
+    <audio :src="currentSong.url" ref="audio" @timeupdate="getCurrentTime"></audio>
 </div>
 </template>
 <script type="text/ecmascript-6">
 import {mapGetters, mapMutations} from 'vuex'
-import animation from 'create-keyframe-animation'
+// import animation from 'create-keyframe-animation'
+import progressbar from 'components/progressbar/progress-bar.vue'
 export default {
   data () {
     return {
+      currentTime: 0
     }
   },
   computed: {
@@ -75,7 +84,8 @@ export default {
       'fullScreen',
       'playlist',
       'currentSong',
-      'playState'
+      'playState',
+      'currentIndex'
     ]),
     miniicon () {
       if (this.playState) {
@@ -86,9 +96,37 @@ export default {
     }
   },
   created () {
-    this.setplayState(true)
   },
   methods: {
+    getCurrentTime (e) {
+      this.currentTime = e.target.currentTime
+    },
+    next () {
+      // 控制播放快进
+      // let audio = this.$refs.audio
+      // let now = audio.currentTime
+      // let next = now + 10
+      // if (next <= this.currentSong.duration) {
+      //   audio.currentTime += 10
+      // }
+      // 控制下一首
+      if (this.currentIndex < this.playlist.length - 1) {
+        this.setCurrentIndex(this.currentIndex + 1)
+      }
+    },
+    prev () {
+      // 控制播放后退
+      // let audio = this.$refs.audio
+      // let now = audio.currentTime
+      // let next = now - 10
+      // if (next > 0) {
+      //   audio.currentTime -= 10
+      // }
+      // 控制上一首
+      if (this.currentIndex !== 0) {
+        this.setCurrentIndex(this.currentIndex - 1)
+      }
+    },
     back () {
       this.setfullScreen(false)
     },
@@ -97,10 +135,22 @@ export default {
     },
     ...mapMutations({
       setfullScreen: 'SET_FULLSCREEN',
-      setplayState: 'SET_PLAY_STATE'
+      setplayState: 'SET_PLAY_STATE',
+      setCurrentIndex: 'SET_CURRENT_INDEX'
     }),
     togglePlaying () {
       this.setplayState(!this.playState)
+    }
+  },
+  filters: {
+    filtertime: function (time) {
+      let playedtime = Math.floor(time) || 0
+      let minuter = Math.floor(playedtime / 60)
+      let second = playedtime % 60
+      if (second < 10) {
+        second = '0' + second
+      }
+      return `${minuter}:${second}`
     }
   },
   watch: {
@@ -113,6 +163,9 @@ export default {
     playState (flag) {
       flag ? this.$refs.audio.play() : this.$refs.audio.pause()
     }
+  },
+  components: {
+    progressbar
   }
 }
 </script>
