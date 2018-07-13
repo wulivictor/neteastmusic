@@ -1,109 +1,174 @@
 <template>
-  <!--<div class="player" v-show="playlist.length>0">-->
-    <!--<transition name="normal"-->
-                <!--@enter="enter"-->
-                <!--@after-enter="afterEnter"-->
-                <!--@leave="leave"-->
-                <!--@after-leave="afterLeave"-->
-    <!--&gt;-->
-      <!--<div class="normal-player" v-show="fullScreen">-->
-        <!--<div class="background">-->
-          <!--<img width="100%" height="100%" :src="currentSong.image">-->
-        <!--</div>-->
-        <!--<div class="top">-->
-          <!--<div class="back" @click="back">-->
-            <!--<i class="icon-back"></i>-->
-          <!--</div>-->
-          <!--<h1 class="title" v-html="currentSong.name"></h1>-->
-          <!--<h2 class="subtitle" v-html="currentSong.singer"></h2>-->
-        <!--</div>-->
-        <!--<div class="middle"-->
-             <!--@touchstart.prevent="middleTouchStart"-->
-             <!--@touchmove.prevent="middleTouchMove"-->
-             <!--@touchend="middleTouchEnd"-->
-        <!--&gt;-->
-          <!--<div class="middle-l" ref="middleL">-->
-            <!--<div class="cd-wrapper" ref="cdWrapper">-->
-              <!--<div class="cd" :class="cdCls">-->
-                <!--<img class="image" :src="currentSong.image">-->
-              <!--</div>-->
-            <!--</div>-->
-            <!--<div class="playing-lyric-wrapper">-->
-              <!--<div class="playing-lyric">{{playingLyric}}</div>-->
-            <!--</div>-->
-          <!--</div>-->
-          <!--<scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines">-->
-            <!--<div class="lyric-wrapper">-->
-              <!--<div v-if="currentLyric">-->
-                <!--<p ref="lyricLine"-->
-                   <!--class="text"-->
-                   <!--:class="{'current': currentLineNum ===index}"-->
-                   <!--v-for="(line,index) in currentLyric.lines">{{line.txt}}</p>-->
-              <!--</div>-->
-            <!--</div>-->
-          <!--</scroll>-->
-        <!--</div>-->
-        <!--<div class="bottom">-->
-          <!--<div class="dot-wrapper">-->
-            <!--<span class="dot" :class="{'active':currentShow==='cd'}"></span>-->
-            <!--<span class="dot" :class="{'active':currentShow==='lyric'}"></span>-->
-          <!--</div>-->
-          <!--<div class="progress-wrapper">-->
-            <!--<span class="time time-l">{{format(currentTime)}}</span>-->
-            <!--<div class="progress-bar-wrapper">-->
-              <!--<progress-bar :percent="percent" @percentChange="onProgressBarChange"></progress-bar>-->
-            <!--</div>-->
-            <!--<span class="time time-r">{{format(currentSong.duration)}}</span>-->
-          <!--</div>-->
-          <!--<div class="operators">-->
-            <!--<div class="icon i-left" @click="changeMode">-->
-              <!--<i :class="iconMode"></i>-->
-            <!--</div>-->
-            <!--<div class="icon i-left" :class="disableCls">-->
-              <!--<i @click="prev" class="icon-prev"></i>-->
-            <!--</div>-->
-            <!--<div class="icon i-center" :class="disableCls">-->
-              <!--<i @click="togglePlaying" :class="playIcon"></i>-->
-            <!--</div>-->
-            <!--<div class="icon i-right" :class="disableCls">-->
-              <!--<i @click="next" class="icon-next"></i>-->
-            <!--</div>-->
-            <!--<div class="icon i-right">-->
-              <!--<i @click="toggleFavorite(currentSong)" class="icon" :class="getFavoriteIcon(currentSong)"></i>-->
-            <!--</div>-->
-          <!--</div>-->
-        <!--</div>-->
-      <!--</div>-->
-    <!--</transition>-->
-    <!--<transition name="mini">-->
-      <!--<div class="mini-player" v-show="!fullScreen" @click="open">-->
-        <!--<div class="icon">-->
-          <!--<img :class="cdCls" width="40" height="40" :src="currentSong.image">-->
-        <!--</div>-->
-        <!--<div class="text">-->
-          <!--<h2 class="name" v-html="currentSong.name"></h2>-->
-          <!--<p class="desc" v-html="currentSong.singer"></p>-->
-        <!--</div>-->
-        <!--<div class="control">-->
-          <!--<progress-circle :radius="radius" :percent="percent">-->
-            <!--<i @click.stop="togglePlaying" class="icon-mini" :class="miniIcon"></i>-->
-          <!--</progress-circle>-->
-        <!--</div>-->
-        <!--<div class="control" @click.stop="showPlaylist">-->
-          <!--<i class="icon-playlist"></i>-->
-        <!--</div>-->
-      <!--</div>-->
-    <!--</transition>-->
-    <!--<playlist ref="playlist"></playlist>-->
-    <!--<audio ref="audio" :src="currentSong.url" @play="ready" @error="error" @timeupdate="updateTime"-->
-           <!--@ended="end"></audio>-->
-  <!--</div>-->
+  <div class="player" v-show="playlist.length>0">
+    <transition name="normal">
+    <div class="normal-player" v-show="fullScreen">
+      <div class="background">
+        <img :src="currentSong.image" width="100%" height="100%">
+      </div>
+      <div class="top">
+        <div class="back" @click="back()">
+          <i class="icon-back"></i>
+        </div>
+        <h1 class="title" v-html="currentSong.name"></h1>
+        <h2 class="subtitle" v-html="currentSong.singer"></h2>
+      </div>
+      <div class="middle">
+        <div class="middle-l" ref="middleL">
+          <div class="cd-wrapper" ref="cdWrapper">
+            <div class="cd" :class="playState ? 'play' : 'pause'">
+              <img class="image" :src="currentSong.image">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bottom">
+        <div class="progress-wrapper">
+          <span class="time time-l">{{currentTime | filtertime}}</span>
+          <div class="progress-bar-wrapper">
+            <progressbar></progressbar>
+          </div>
+          <span class="time time-r">{{currentSong.duration | filtertime}}</span>
+          </div>
+        <div class="operators">
+          <div class="icon i-left">
+            <i class="icon-sequence"></i>
+          </div>
+          <div class="icon i-left">
+            <i class="icon-prev" @click="prev"></i>
+          </div>
+          <div class="icon i-center">
+            <i @click="togglePlaying" :class="playState ? 'icon-pause' : 'icon-play'"></i>
+          </div>
+          <div class="icon right">
+            <i class="icon-next" @click="next"></i>
+          </div>
+          <div class="icon right">
+            <i class="icon icon-not-favorite"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </transition>
+  <transition name="mini">
+    <div class="mini-player" v-show="!fullScreen" @click="into()">
+      <div class="icon">
+        <img width="40" height="40" :src="currentSong.image" :class="playState ? 'play' : 'pause'">
+      </div>
+      <div class="text">
+        <h2 class="name" v-html="currentSong.name"></h2>
+        <p class="desc" v-html="currentSong.singer"></p>
+      </div>
+      <div class="control">
+        <i @click.stop="togglePlaying" :class="miniicon"></i>
+      </div>
+      <div class="control">
+        <i class="icon-playlist"></i>
+      </div>
+    </div>
+  </transition>
+    <audio :src="currentSong.url" ref="audio" @timeupdate="getCurrentTime"></audio>
+</div>
 </template>
-
 <script type="text/ecmascript-6">
-
+import {mapGetters, mapMutations} from 'vuex'
+// import animation from 'create-keyframe-animation'
+import progressbar from 'components/progressbar/progress-bar.vue'
+export default {
+  data () {
+    return {
+      currentTime: 0
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'fullScreen',
+      'playlist',
+      'currentSong',
+      'playState',
+      'currentIndex'
+    ]),
+    miniicon () {
+      if (this.playState) {
+        return 'icon-pause-mini'
+      } else {
+        return 'icon-play-mini'
+      }
+    }
+  },
+  created () {
+  },
+  methods: {
+    getCurrentTime (e) {
+      this.currentTime = e.target.currentTime
+    },
+    next () {
+      // 控制播放快进
+      // let audio = this.$refs.audio
+      // let now = audio.currentTime
+      // let next = now + 10
+      // if (next <= this.currentSong.duration) {
+      //   audio.currentTime += 10
+      // }
+      // 控制下一首
+      if (this.currentIndex < this.playlist.length - 1) {
+        this.setCurrentIndex(this.currentIndex + 1)
+      }
+    },
+    prev () {
+      // 控制播放后退
+      // let audio = this.$refs.audio
+      // let now = audio.currentTime
+      // let next = now - 10
+      // if (next > 0) {
+      //   audio.currentTime -= 10
+      // }
+      // 控制上一首
+      if (this.currentIndex !== 0) {
+        this.setCurrentIndex(this.currentIndex - 1)
+      }
+    },
+    back () {
+      this.setfullScreen(false)
+    },
+    into () {
+      this.setfullScreen(true)
+    },
+    ...mapMutations({
+      setfullScreen: 'SET_FULLSCREEN',
+      setplayState: 'SET_PLAY_STATE',
+      setCurrentIndex: 'SET_CURRENT_INDEX'
+    }),
+    togglePlaying () {
+      this.setplayState(!this.playState)
+    }
+  },
+  filters: {
+    filtertime: function (time) {
+      let playedtime = Math.floor(time) || 0
+      let minuter = Math.floor(playedtime / 60)
+      let second = playedtime % 60
+      if (second < 10) {
+        second = '0' + second
+      }
+      return `${minuter}:${second}`
+    }
+  },
+  watch: {
+    currentSong () {
+      this.$nextTick(() => {
+        this.$refs.audio.play()
+        this.setplayState(true)
+      })
+    },
+    playState (flag) {
+      flag ? this.$refs.audio.play() : this.$refs.audio.pause()
+    }
+  },
+  components: {
+    progressbar
+  }
+}
 </script>
-
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
   @import "~common/stylus/mixin"
@@ -332,13 +397,12 @@
         padding: 0 10px
         .icon-play-mini, .icon-pause-mini, .icon-playlist
           font-size: 30px
-          color: $color-theme-d
+          color: $color-theme
         .icon-mini
           font-size: 32px
           position: absolute
           left: 0
           top: 0
-
   @keyframes rotate
     0%
       transform: rotate(0)

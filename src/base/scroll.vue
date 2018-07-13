@@ -40,7 +40,8 @@ export default {
         // 会非实时（屏幕滑动超过一定时间后）派发scroll 事件；当 probeType 为 2 的时候，
         // 会在屏幕滑动的过程中实时的派发 scroll 事件；当 probeType 为 3 的时候，
         // 不仅在屏幕滑动的过程中，而且在 momentum 滚动动画运行过程中实时派发 scroll 事件。
-        preventDefault: true
+        preventDefault: true,
+        momentum: true
       })
       // 通过滚动事件再监听 列表的坐标
       let that = this
