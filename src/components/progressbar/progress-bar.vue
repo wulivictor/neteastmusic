@@ -1,20 +1,100 @@
 <template>
-  <div class="progress-bar" ref="progressBar" >
+  <div class="progress-bar" ref="progressBar">
     <div class="bar-inner">
-      <div class="progress" ref="progress"></div>
+      <div class="progress" ref="progress"></div> <!-- 这个是进度条，走了多远 -->
       <div class="progress-btn-wrapper">
-        <div class="progress-btn"></div>
+        <div class="progress-btn" @touchmove="slideProgress"></div>    <!-- 这个是一个点，可以拖拽，前进后退-->
       </div>
     </div>
   </div>
 </template>
-
 <script type="text/ecmascript-6">
-</script>
+export default {
+  data () {
+    return {
+      barLength: 0,
+      moveSpeed: 0,
+      movedLenth: 0,
+      btnPos: 0
+    }
+  },
+  props: {
+    currentPlayTime: {
+      type: Number,
+      default: 0
+    },
+    durationTime: {
+      type: Number,
+      default: 0
+    },
+    playState: {
+      type: Boolean,
+      default: false
+    }
+  },
+  mounted () {
+    this.$nextTick(() => {
+      // 初始化相关参数信息
+      this.barLength = this.$refs.progressBar.offsetWidth
+      this.moveSpeed = this.barLength / this.durationTime
+      this.btn = this.$refs.progressBar.getElementsByClassName('progress-btn')[0]
+      this.btnPos = this.btn.offsetLeft
+      console.log(this.btnPos)
+      this.movedLenth = 0
+      // 播放状态setinterval
+      if (this.playState) {
+        this.progressMove()
+      }
+    })
+  },
+  methods: {
+    slideProgress (event) {
+      // 在拖拽状态清楚定时器，避免干扰
+      this.progressStop()
+      // 计算按钮在屏幕中的clientx
+      let preClientx = this.btnPos + window.innerWidth * 0.1 + 30
+      event = window.event || event
+      let clientx = event.targetTouches[0].clientX
+      let move = clientx - preClientx
+      let btnposInBar = this.btnPos + move
+      let progressBarLength = this.$refs.progressBar.offsetWidth
+      if (btnposInBar < 0 || btnposInBar > progressBarLength) {
+        return
+      }
+      this.btn.style.left = btnposInBar + 'px'
+      this.btnPos = this.btn.offsetLeft
+      this.movedLenth = btnposInBar
+      this.$refs.progress.style.width = this.movedLenth + 'px'
 
+      this.progressMove()
+    },
+    progressMove () {
+      let vm = this
+      vm.progressRun = setInterval(() => {
+        vm.movedLenth += vm.moveSpeed
+        vm.btnPos += vm.moveSpeed
+        vm.$refs.progress.style.width = vm.movedLenth + 'px'
+        this.btn.style.left = vm.btnPos + 'px'
+      }, 1000)
+    },
+    progressStop () {
+      clearInterval(this.progressRun)
+    }
+  },
+  watch: {
+    playState (state) {
+      let vm = this
+      if (state) {
+        vm.progressMove()
+      } else {
+        vm.progressStop()
+      }
+    }
+  }
+}
+</script>
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
-
   .progress-bar
     height: 30px
     .bar-inner

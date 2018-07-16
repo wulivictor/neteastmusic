@@ -25,7 +25,10 @@
         <div class="progress-wrapper">
           <span class="time time-l">{{currentTime | filtertime}}</span>
           <div class="progress-bar-wrapper">
-            <progressbar></progressbar>
+            <progressbar :currentPlayTime="currentTime"
+                         :durationTime="currentSong.duration"
+                         :playState="playState"
+                         v-if="currentTime"></progressbar>
           </div>
           <span class="time time-r">{{currentSong.duration | filtertime}}</span>
           </div>
