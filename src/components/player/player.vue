@@ -28,7 +28,7 @@
             <progressbar :currentPlayTime="currentTime"
                          :durationTime="currentSong.duration"
                          :playState="playState"
-                         v-if="currentTime"></progressbar>
+                         v-if="currentTime" @controlPlayTime="controlPlayTime"></progressbar>
           </div>
           <span class="time time-r">{{currentSong.duration | filtertime}}</span>
           </div>
@@ -101,6 +101,14 @@ export default {
   created () {
   },
   methods: {
+    controlPlayTime (time) {
+      console.log(time)
+      // 控制播放快进
+      let audio = this.$refs.audio
+      if (time >= 0 || time <= this.currentSong.duration) {
+        audio.currentTime = time
+      }
+    },
     getCurrentTime (e) {
       this.currentTime = e.target.currentTime
     },
@@ -157,6 +165,11 @@ export default {
     }
   },
   watch: {
+    currentTime (time) {
+      if (this.$refs.audio.ended) {
+        this.setplayState(false)
+      }
+    },
     currentSong () {
       this.$nextTick(() => {
         this.$refs.audio.play()
