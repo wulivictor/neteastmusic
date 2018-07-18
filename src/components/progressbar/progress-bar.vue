@@ -54,9 +54,9 @@ export default {
       // 定位按钮
       this.btnPos = window.event.clientX - window.innerWidth * 0.1 - 30
       this.btn.style.left = this.btnPos + 'px'
+      this.movedLenth = this.btnPos
 
-      this.$refs.progress.style.width = this.btnPos + 'px'
-
+      this.$refs.progress.style.width = this.movedLenth + 'px'
       let time = this.btnPos / this.barLength * this.durationTime
       this.$emit('controlPlayTime', time)
       this.progressMove()
