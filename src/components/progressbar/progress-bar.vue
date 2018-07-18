@@ -65,11 +65,19 @@ export default {
       this.btnPos = this.btn.offsetLeft
       this.movedLenth = btnposInBar
       this.$refs.progress.style.width = this.movedLenth + 'px'
+      // 计算需要改变的时间
+      let time = this.movedLenth / this.barLength * this.durationTime
 
+      // 控制歌曲进度
+      this.$emit('controlPlayTime', time)
       this.progressMove()
     },
     progressMove () {
       let vm = this
+      // 如果歌曲播放完了 ，清除定时器
+      if (this.currentPlayTime === this.durationTime) {
+        this.progressStop()
+      }
       vm.progressRun = setInterval(() => {
         vm.movedLenth += vm.moveSpeed
         vm.btnPos += vm.moveSpeed
