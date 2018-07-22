@@ -28,7 +28,8 @@
             <progressbar :currentPlayTime="currentTime"
                          :durationTime="currentSong.duration"
                          :playState="playState"
-                         v-if="currentTime" @controlPlayTime="controlPlayTime"></progressbar>
+                         :currentSong = "currentSong"
+                         v-if="currentTime" @controlPlayTime="controlPlayTime" ref="progressbar"></progressbar>
           </div>
           <span class="time time-r">{{currentSong.duration | filtertime}}</span>
           </div>
@@ -37,13 +38,13 @@
             <i class="icon-sequence"></i>
           </div>
           <div class="icon i-left">
-            <i class="icon-prev" @click="prev"></i>
+            <i class="icon-prev" @click="prev()"></i>
           </div>
           <div class="icon i-center">
             <i @click="togglePlaying" :class="playState ? 'icon-pause' : 'icon-play'"></i>
           </div>
           <div class="icon right">
-            <i class="icon-next" @click="next"></i>
+            <i class="icon-next" @click="next()"></i>
           </div>
           <div class="icon right">
             <i class="icon icon-not-favorite"></i>
@@ -53,7 +54,7 @@
     </div>
   </transition>
   <transition name="mini">
-    <div class="mini-player" v-show="!fullScreen" @click="into()">
+    <div class="mini-player" v-show="!fullScreen" @click.stop="into()">
       <div class="icon">
         <img width="40" height="40" :src="currentSong.image" :class="playState ? 'play' : 'pause'">
       </div>
@@ -98,11 +99,8 @@ export default {
       }
     }
   },
-  created () {
-  },
   methods: {
     controlPlayTime (time) {
-      console.log(time)
       // 控制播放快进
       let audio = this.$refs.audio
       if (time >= 0 || time <= this.currentSong.duration) {
@@ -113,26 +111,12 @@ export default {
       this.currentTime = e.target.currentTime
     },
     next () {
-      // 控制播放快进
-      // let audio = this.$refs.audio
-      // let now = audio.currentTime
-      // let next = now + 10
-      // if (next <= this.currentSong.duration) {
-      //   audio.currentTime += 10
-      // }
       // 控制下一首
       if (this.currentIndex < this.playlist.length - 1) {
         this.setCurrentIndex(this.currentIndex + 1)
       }
     },
     prev () {
-      // 控制播放后退
-      // let audio = this.$refs.audio
-      // let now = audio.currentTime
-      // let next = now - 10
-      // if (next > 0) {
-      //   audio.currentTime -= 10
-      // }
       // 控制上一首
       if (this.currentIndex !== 0) {
         this.setCurrentIndex(this.currentIndex - 1)
@@ -167,14 +151,23 @@ export default {
   watch: {
     currentTime (time) {
       if (this.$refs.audio.ended) {
+        this.$refs.progressbar.progressStop()
         this.setplayState(false)
+        if (this.currentIndex + 1 <= this.playlist.length) {
+          this.setCurrentIndex(this.currentIndex + 1)
+        } else {
+          this.setCurrentIndex(0)
+        }
       }
     },
     currentSong () {
       this.$nextTick(() => {
-        this.$refs.audio.play()
-        this.setplayState(true)
+        let promise = this.$refs.audio.play()
+        promise && promise.catch(function (reseon) {
+          console.log(reseon)
+        })
       })
+      this.setplayState(true)
     },
     playState (flag) {
       flag ? this.$refs.audio.play() : this.$refs.audio.pause()

@@ -30,6 +30,12 @@ export default {
     playState: {
       type: Boolean,
       default: false
+    },
+    currentSong: {
+      type: Object,
+      default () {
+        return {}
+      }
     }
   },
   mounted () {
@@ -39,7 +45,7 @@ export default {
       this.moveSpeed = this.barLength / this.durationTime
       this.btn = this.$refs.progressBar.getElementsByClassName('progress-btn')[0]
       this.btnPos = this.btn.offsetLeft
-      console.log(this.btnPos)
+      // console.log(this.btnPos)
       this.movedLenth = 0
       // 播放状态setinterval
       if (this.playState) {
@@ -55,7 +61,6 @@ export default {
       this.btnPos = window.event.clientX - window.innerWidth * 0.1 - 30
       this.btn.style.left = this.btnPos + 'px'
       this.movedLenth = this.btnPos
-
       this.$refs.progress.style.width = this.movedLenth + 'px'
       let time = this.btnPos / this.barLength * this.durationTime
       this.$emit('controlPlayTime', time)
@@ -88,9 +93,10 @@ export default {
     progressMove () {
       let vm = this
       // 如果歌曲播放完了 ，清除定时器
-      if (this.currentPlayTime === this.durationTime) {
-        this.progressStop()
-      }
+      // if (this.currentPlayTime === this.durationTime) {
+      //   // this.progressStop()
+      //   console.log('交给父亲来管理')
+      // }
       vm.progressRun = setInterval(() => {
         vm.movedLenth += vm.moveSpeed
         vm.btnPos += vm.moveSpeed
@@ -110,6 +116,10 @@ export default {
       } else {
         vm.progressStop()
       }
+    },
+    currentSong () {
+      // 切换歌曲时，清除之前的定时器
+      this.progressStop()
     }
   }
 }
