@@ -116,13 +116,16 @@ export default {
   methods: {
     // 用于制作随机播放列表
     randomSort (a, b) {
-      return Math.random() > 0.5 ? -1 : 1
+      return Math.random() > 0.5 ? -1 : 1 // 这个很有意思
     },
     switchPlayMode () {
+      // 需求： 改变播放列表的顺序，但是给用户显示的还是顺序播放列表， 改变播放模式默认会切换歌曲，因为currentSong是getter计算出来的，所以为了不重新切换歌曲，还需要计算index
       if (this.mode === 0) {
         this.setPlayMode(1)
         let loop = []
         loop.push(this.playlist[this.currentIndex])
+        // 重新计算index，因为currentSong是计算出来的，list和index都变了，curreentSong也会变
+        this.setCurrentIndex(0)
         this.setPlayList(loop)
       } else if (this.mode === 1) {
         this.setPlayMode(2)
@@ -136,9 +139,16 @@ export default {
         for (let i = 0; i < array.length; i++) {
           random.push(this.sequencelist[array[i]])
         }
-        console.log(random)
+        let currentIndex = 0
+        random.forEach((ele, index) => {
+          if (ele.id === this.currentSong.id) {
+            currentIndex = index
+          }
+        })
+        this.setCurrentIndex(currentIndex)
         this.setPlayList(random)
-      } else {
+      } else if (this.mode === 2) {
+        this.setPlayMode(0)
         this.setPlayList(this.sequencelist)
       }
     },
