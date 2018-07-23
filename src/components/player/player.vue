@@ -35,7 +35,7 @@
           </div>
         <div class="operators">
           <div class="icon i-left">
-            <i class="icon-sequence"></i>
+            <i @click="switchPlayMode()" :class="changeModeIcon"></i>
           </div>
           <div class="icon i-left">
             <i class="icon-prev" @click="prev()"></i>
@@ -74,6 +74,9 @@
 </div>
 </template>
 <script type="text/ecmascript-6">
+// sequence: 0,
+// loop: 1,
+// random: 2
 import {mapGetters, mapMutations} from 'vuex'
 // import animation from 'create-keyframe-animation'
 import progressbar from 'components/progressbar/progress-bar.vue'
@@ -89,7 +92,8 @@ export default {
       'playlist',
       'currentSong',
       'playState',
-      'currentIndex'
+      'currentIndex',
+      'mode'
     ]),
     miniicon () {
       if (this.playState) {
@@ -97,9 +101,32 @@ export default {
       } else {
         return 'icon-play-mini'
       }
+    },
+    changeModeIcon () {
+      if (this.mode === 0) {
+        return 'icon-sequence'
+      } else if (this.mode === 1) {
+        return 'icon-loop'
+      } else {
+        return 'icon-random'
+      }
     }
   },
   methods: {
+    switchPlayMode () {
+      if (this.mode === 0) {
+        this.setPlayMode(1)
+      } else if (this.mode === 1) {
+        this.setPlayMode(2)
+      } else {
+        this.setPlayMode(0)
+
+
+
+
+
+      }
+    },
     controlPlayTime (time) {
       // 控制播放快进
       let audio = this.$refs.audio
@@ -131,7 +158,8 @@ export default {
     ...mapMutations({
       setfullScreen: 'SET_FULLSCREEN',
       setplayState: 'SET_PLAY_STATE',
-      setCurrentIndex: 'SET_CURRENT_INDEX'
+      setCurrentIndex: 'SET_CURRENT_INDEX',
+      setPlayMode: 'SET_MODE'
     }),
     togglePlaying () {
       this.setplayState(!this.playState)
@@ -149,6 +177,8 @@ export default {
     }
   },
   watch: {
+    mode (mode) {
+    },
     currentTime (time) {
       if (this.$refs.audio.ended) {
         this.$refs.progressbar.progressStop()

@@ -8,8 +8,8 @@ const state = {
   songs: [],
   playState: false,
   fullScreen: false,
-  playlist: [],
-  sequencelist: [],
+  playlist: [], //
+  sequencelist: [], // 这是顺序列表
   mode: playMode.sequence,
   currentIndex: -1 // 当前播放歌曲在sequence中的索引
 }
