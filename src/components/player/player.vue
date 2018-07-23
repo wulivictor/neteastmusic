@@ -93,7 +93,8 @@ export default {
       'currentSong',
       'playState',
       'currentIndex',
-      'mode'
+      'mode',
+      'sequencelist'
     ]),
     miniicon () {
       if (this.playState) {
@@ -113,18 +114,32 @@ export default {
     }
   },
   methods: {
+    // 用于制作随机播放列表
+    randomSort (a, b) {
+      return Math.random() > 0.5 ? -1 : 1
+    },
     switchPlayMode () {
       if (this.mode === 0) {
         this.setPlayMode(1)
+        let loop = []
+        loop.push(this.playlist[this.currentIndex])
+        this.setPlayList(loop)
       } else if (this.mode === 1) {
         this.setPlayMode(2)
+
+        let array = []
+        for (let i = 0; i < this.sequencelist.length; i++) {
+          array.push(i)
+        }
+        array.sort(this.randomSort)
+        let random = []
+        for (let i = 0; i < array.length; i++) {
+          random.push(this.sequencelist[array[i]])
+        }
+        console.log(random)
+        this.setPlayList(random)
       } else {
-        this.setPlayMode(0)
-
-
-
-
-
+        this.setPlayList(this.sequencelist)
       }
     },
     controlPlayTime (time) {
@@ -159,7 +174,8 @@ export default {
       setfullScreen: 'SET_FULLSCREEN',
       setplayState: 'SET_PLAY_STATE',
       setCurrentIndex: 'SET_CURRENT_INDEX',
-      setPlayMode: 'SET_MODE'
+      setPlayMode: 'SET_MODE',
+      setPlayList: 'SET_PLAY_LIST'
     }),
     togglePlaying () {
       this.setplayState(!this.playState)
@@ -177,8 +193,6 @@ export default {
     }
   },
   watch: {
-    mode (mode) {
-    },
     currentTime (time) {
       if (this.$refs.audio.ended) {
         this.$refs.progressbar.progressStop()
