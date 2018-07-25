@@ -9,6 +9,8 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
+import {mapGetters} from 'vuex'
+const BARWAPPERWIDTH = 13
 export default {
   data () {
     return {
@@ -17,6 +19,11 @@ export default {
       movedLenth: 0,
       btnPos: 0
     }
+  },
+  computed: {
+    ...mapGetters([
+      'currentIndex'
+    ])
   },
   props: {
     currentPlayTime: {
@@ -41,6 +48,9 @@ export default {
   mounted () {
     this.$nextTick(() => {
       // 初始化相关参数信息
+      let domWidth = document.documentElement.getBoundingClientRect().width
+      // btn实际跑的距离
+      let btnrunlength = (domWidth - BARWAPPERWIDTH * 2) / domWidth
       this.barLength = this.$refs.progressBar.offsetWidth
       this.moveSpeed = this.barLength / this.durationTime
       this.btn = this.$refs.progressBar.getElementsByClassName('progress-btn')[0]
@@ -116,10 +126,6 @@ export default {
       } else {
         vm.progressStop()
       }
-    },
-    currentSong () {
-      // 切换歌曲时，清除之前的定时器
-      this.progressStop()
     }
   }
 }

@@ -29,7 +29,9 @@
                          :durationTime="currentSong.duration"
                          :playState="playState"
                          :currentSong = "currentSong"
-                         v-if="currentTime" @controlPlayTime="controlPlayTime" ref="progressbar"></progressbar>
+                         v-if="currentTime"
+                         @controlPlayTime="controlPlayTime"
+                         ref="playprogressbar"></progressbar>
           </div>
           <span class="time time-r">{{currentSong.duration | filtertime}}</span>
           </div>
@@ -114,39 +116,58 @@ export default {
     }
   },
   methods: {
+    randomController () {
+      let array = []
+      for (let i = 0; i < this.sequencelist.length; i++) {
+        array.push(i)
+      }
+      array.sort(this.randomSort)
+      let random = []
+      for (let i = 0; i < array.length; i++) {
+        random.push(this.sequencelist[array[i]])
+      }
+      let currentIndex = 0
+      random.forEach((ele, index) => {
+        if (ele.id === this.currentSong.id) {
+          currentIndex = index
+        }
+      })
+      this.setCurrentIndex(currentIndex)
+      this.setPlayList(random)
+    },
     // 用于制作随机播放列表
     randomSort (a, b) {
       return Math.random() > 0.5 ? -1 : 1 // 这个很有意思
     },
+    randomPlaylist () {
+      let random = []
+      let number = []
+      for (let i = 0; i < this.sequencelist.length; i++) {
+        number.push(i)
+      }
+      number.sort(this.randomSort)
+      number.forEach((ele, index) => {
+        random.push(this.sequencelist[ele])
+      })
+      random.forEach((ele, index) => {
+        if (ele.id === this.currentSong.id) {
+          this.setCurrentIndex(index)
+        }
+      })
+      this.setPlayList(random)
+    },
     switchPlayMode () {
       // 需求： 改变播放列表的顺序，但是给用户显示的还是顺序播放列表， 改变播放模式默认会切换歌曲，因为currentSong是getter计算出来的，所以为了不重新切换歌曲，还需要计算index
       if (this.mode === 0) {
-        this.setPlayMode(1)
         let loop = []
-        loop.push(this.playlist[this.currentIndex])
-        // 重新计算index，因为currentSong是计算出来的，list和index都变了，curreentSong也会变
-        this.setCurrentIndex(0)
+        for (let n = 0; n < this.sequencelist.length; n++) {
+          loop.push(this.currentSong)
+        }
+        this.setPlayMode(1)
         this.setPlayList(loop)
       } else if (this.mode === 1) {
         this.setPlayMode(2)
-
-        let array = []
-        for (let i = 0; i < this.sequencelist.length; i++) {
-          array.push(i)
-        }
-        array.sort(this.randomSort)
-        let random = []
-        for (let i = 0; i < array.length; i++) {
-          random.push(this.sequencelist[array[i]])
-        }
-        let currentIndex = 0
-        random.forEach((ele, index) => {
-          if (ele.id === this.currentSong.id) {
-            currentIndex = index
-          }
-        })
-        this.setCurrentIndex(currentIndex)
-        this.setPlayList(random)
+        this.randomPlaylist()
       } else if (this.mode === 2) {
         this.setPlayMode(0)
         this.setPlayList(this.sequencelist)
@@ -162,16 +183,33 @@ export default {
     getCurrentTime (e) {
       this.currentTime = e.target.currentTime
     },
+    loopmode () {
+      if (this.mode === 1) {
+        this.$refs.audio.load()
+      }
+    },
     next () {
+      this.loopmode()
+      if (this.mode === 2) {
+        this.randomPlaylist()
+      }
       // 控制下一首
       if (this.currentIndex < this.playlist.length - 1) {
         this.setCurrentIndex(this.currentIndex + 1)
+      } else {
+        this.setCurrentIndex(0)
       }
     },
     prev () {
       // 控制上一首
+      this.loopmode()
+      if (this.mode === 2) {
+        this.randomPlaylist()
+      }
       if (this.currentIndex !== 0) {
         this.setCurrentIndex(this.currentIndex - 1)
+      } else {
+        this.setCurrentIndex(this.playlist.length - 1)
       }
     },
     back () {
@@ -203,9 +241,15 @@ export default {
     }
   },
   watch: {
+    currentIndex () {
+      // progressRun
+      if (this.$refs.playprogressbar && this.$refs.playprogressbar.progressRun) {
+        this.$refs.playprogressbar.progressStop()
+      }
+    },
     currentTime (time) {
       if (this.$refs.audio.ended) {
-        this.$refs.progressbar.progressStop()
+        this.$refs.playprogressbar.progressStop()
         this.setplayState(false)
         if (this.currentIndex + 1 <= this.playlist.length) {
           this.setCurrentIndex(this.currentIndex + 1)
@@ -215,6 +259,9 @@ export default {
       }
     },
     currentSong () {
+      if (this.$refs.playprogressbar && this.$refs.playprogressbar.progressRun) {
+        this.$refs.playprogressbar.progressStop()
+      }
       this.$nextTick(() => {
         let promise = this.$refs.audio.play()
         promise && promise.catch(function (reseon) {
