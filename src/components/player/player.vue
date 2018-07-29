@@ -265,8 +265,8 @@ export default {
       this.$nextTick(() => {
         let promise = this.$refs.audio.play()
         promise && promise.catch(function (reseon) {
-          console.log(reseon)
         })
+        this.currentSong.getlyric()
       })
       this.setplayState(true)
     },

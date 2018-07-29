@@ -1,6 +1,7 @@
 import {commonParam, options} from './common'
 import {get} from 'common/js/ajax'
 import jsonp from '../common/js/jsonpHandler'
+import axios from 'axios'
 export function getMusic (songmid) {
   const url = '/api/music'
   const data = Object.assign({}, commonParam, {
@@ -40,4 +41,21 @@ export function getSonglist (singerid) {
     format: 'json'
   })
   return jsonp(url, data, options)
+}
+
+export function getLyric (mid) {
+  const url = '/api/lyric'
+  const data = Object.assign({}, commonParam, {
+    uin: 0,
+    platform: 'h5',
+    needNewCode: 1,
+    nobase64: 1,
+    musicid: mid,
+    songtype: 0
+  })
+  return axios.get(url, {
+    params: data
+  }).then((res) => {
+    return Promise.resolve(res.data) // 这儿我没弄懂 应该是返回一个promise对象 ，然后这个对象中有方法，通过执行方法返回res.data
+  })
 }
