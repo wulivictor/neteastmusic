@@ -14,7 +14,7 @@ export default class Song {
   }
   getlyric () {
     getLyric(this.mid).then(res => {
-      if (res.ERROR_OK === 0) {
+      if (res.code === ERROR_OK) {
         debugger
         res = res.data
         return res
