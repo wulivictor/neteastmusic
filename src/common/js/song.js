@@ -13,10 +13,9 @@ export default class Song {
     this.url = url
   }
   getlyric () {
-    debugger
-
     getLyric(this.mid).then(res => {
       if (res.ERROR_OK === 0) {
+        debugger
         res = res.data
         return res
       }

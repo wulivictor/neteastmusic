@@ -50,7 +50,7 @@ export default {
       // 初始化相关参数信息
       let domWidth = document.documentElement.getBoundingClientRect().width
       // btn实际跑的距离
-      let btnrunlength = (domWidth - BARWAPPERWIDTH * 2) / domWidth
+      // let btnrunlength = (domWidth - BARWAPPERWIDTH * 2) / domWidth
       this.barLength = this.$refs.progressBar.offsetWidth
       this.moveSpeed = this.barLength / this.durationTime
       this.btn = this.$refs.progressBar.getElementsByClassName('progress-btn')[0]

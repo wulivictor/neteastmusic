@@ -9,9 +9,17 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const portfinder = require('portfinder')
-
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
+
+// node处理referer 和host   (lyric中做了refer和host而验证)
+//模拟真实数据
+const express = require('express')
+const axios = require('axios')
+const app = express()
+var apiRoutes = express.Router()
+app.use('/api', apiRoutes)
+
 
 const devWebpackConfig = merge(baseWebpackConfig, {
   module: {
@@ -19,7 +27,6 @@ const devWebpackConfig = merge(baseWebpackConfig, {
   },
   // cheap-module-eval-source-map is faster for development
   devtool: config.dev.devtool,
-
   // these devServer options should be customized in /config/index.js
   devServer: {
     clientLogLevel: 'warning',
@@ -40,6 +47,31 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     publicPath: config.dev.assetsPublicPath,
     proxy: config.dev.proxyTable,
     quiet: true, // necessary for FriendlyErrorsPlugin
+    before(apiRoutes) {
+      apiRoutes.get('/api/lyric', function (req, res) {
+        let url = 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg'
+        axios.get(url, {
+          headers: {
+            referer: 'https://c.y.qq.com/',
+            host: 'c.y.qq.com'
+          },
+          params: req.query
+        }).then((response) => {
+          let ret = response.data
+          // if (typeof ret === 'string') {
+          //   /* \w:字母、数字、下划线   中间就是以大括号开始，小括号结束且不为（ 、）的字符，一个和多个*/
+          //   let reg = /^\w+\(({[^()]+})\)$/ /*==> MusicJsonCallback({\"retcode\":0,\"code\":0,\"subcode\...."})*/
+          //   let matches = ret.match(reg)
+          //   if (matches) {
+          //     ret = JSON.parse(matches[1])
+          //   }
+          // }
+          res.json(ret)
+        }).catch((e) => {
+          console.log(e)
+        })
+      })
+    },
     watchOptions: {
       poll: config.dev.poll,
     }

@@ -28,19 +28,7 @@ module.exports = {
         pathRewrite: {
           '^/api/music': ''
         }
-      },
-      '/api/lyric': {
-        target: 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric.fcg',
-        changeOrigin:true,
-        bypass: function (req, res, proxyOptions) {
-          req.header.referencer = 'https://c.y.qq.com'
-          req.header.host = 'c.y.qq.com'
-        },
-        pathRewrite: {
-          '^/api/lyric': ''
-        }
       }
-
     },
 
     // Various Dev Server settings
