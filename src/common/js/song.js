@@ -15,7 +15,9 @@ export default class Song {
   }
   getlyric () {
     if (this.lyric) {
-      return new Promise.resolve(this.lyric)
+      return new Promise((resolve) => {
+        resolve(this.lyric)
+      })
     }
     return new Promise((resolve, reject) => {
       getLyric(this.mid).then(res => {
@@ -23,7 +25,7 @@ export default class Song {
           this.lyric = Base64.decode(res.lyric)
           resolve(this.lyric)
         } else {
-          reject('There is no lyric!')
+          reject(404)
         }
       })
     })

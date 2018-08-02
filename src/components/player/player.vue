@@ -264,6 +264,9 @@ export default {
     },
     getLyric () {
       this.currentSong.getlyric().then((lyric) => {
+        if (!lyric) {
+          return
+        }
         this.currentLyric = new Lyric(lyric, this.handleLyric)
         if (this.playState) {
           this.currentLyric.play()
