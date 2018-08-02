@@ -12,15 +12,17 @@
         <h1 class="title" v-html="currentSong.name"></h1>
         <h2 class="subtitle" v-html="currentSong.singer"></h2>
       </div>
-      <div class="middle">
-        <div class="middle-l" ref="middleL" v-show="false">
+      <div class="middle"
+           @touchstart="ontouchstart()"
+           @touchmove="ontouchmove()">
+        <div class="middle-l" ref="middleL" v-show="playUI">
           <div class="cd-wrapper" ref="cdWrapper">
             <div class="cd" :class="playState ? 'play' : 'pause'">
               <img class="image" :src="currentSong.image">
             </div>
           </div>
         </div>
-        <div class="middle-r" ref="lyricList" v-if="this.currentLyric"> <!--使用betterscroll 滚动歌词 -->
+        <div class="middle-r" ref="lyricList" v-if="this.currentLyric" v-show="!playUI"> <!--使用betterscroll 滚动歌词 -->
           <div class="lyric-wrapper">
             <div class="currentLyric">
               <p class="text" ref="lyricLine" v-for="(text, index) in currentLyric.lines" v-bind:key="index" v-bind:class="{'current' : currentLine === index}">
@@ -29,9 +31,12 @@
             </div>
           </div>
         </div>
-
       </div>
       <div class="bottom">
+        <div class="dot-wrapper">
+          <div class="dot" v-bind:class="{'active':playUI}"></div>
+          <div class="dot" v-bind:class="{'active':!playUI}"></div>
+        </div>
         <div class="progress-wrapper">
           <span class="time time-l">{{currentTime | filtertime}}</span>
           <div class="progress-bar-wrapper">
@@ -99,7 +104,12 @@ export default {
     return {
       currentTime: 0,
       currentLyric: null,
-      currentLine: -1
+      currentLine: -1,
+      playUI: true,
+      touchPos: {
+        touchstart: 0,
+        touchmove: 0
+      }
     }
   },
   computed: {
@@ -285,6 +295,21 @@ export default {
       this.$nextTick(() => {
         this.lyricScroll = new BScroll(this.$refs.lyricList, {})
       })
+    },
+    ontouchstart (event) {
+      event = event || window.event
+      this.touchPos.touchstart = event.targetTouches[0].clientX
+    },
+    ontouchmove (event) {
+      event = event || window.event
+      this.touchPos.touchmove = event.targetTouches[0].clientX
+      if ((this.touchPos.touchmove - this.touchPos.touchstart) > 100) {
+        this.playUI = true
+      }
+
+      if ((this.touchPos.touchstart - this.touchPos.touchmove) > 100) {
+        this.playUI = false
+      }
     }
   },
   filters: {
