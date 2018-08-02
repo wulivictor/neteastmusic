@@ -215,6 +215,9 @@ export default {
       if (time >= 0 || time <= this.currentSong.duration) {
         audio.currentTime = time
       }
+      // 控制歌词进度
+
+      this.currentLyric.seek(time * 1000)
     },
     getCurrentTime (e) {
       this.currentTime = e.target.currentTime
@@ -269,11 +272,14 @@ export default {
       setPlayList: 'SET_PLAY_LIST'
     }),
     togglePlaying () {
+      if (this.$refs.audio.readyState !== 4) {
+        return
+      }
       // 设置过去播放状态
       this.setplayState(!this.playState)
       // 设置歌词播放状态
       if (this.currentLyric) {
-        this.currentLyric.toggelePlay()
+        this.currentLyric.togglePlay()
       }
     },
     getLyric () {
@@ -607,9 +613,6 @@ export default {
       transform: rotate(0)
     100%
       transform: rotate(360deg)
-
-
-
   .fade-enter-active, .fade-leave-active {
     transition: opacity .5s;
   }
