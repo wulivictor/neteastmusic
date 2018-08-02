@@ -13,13 +13,23 @@
         <h2 class="subtitle" v-html="currentSong.singer"></h2>
       </div>
       <div class="middle">
-        <div class="middle-l" ref="middleL">
+        <div class="middle-l" ref="middleL" v-show="false">
           <div class="cd-wrapper" ref="cdWrapper">
             <div class="cd" :class="playState ? 'play' : 'pause'">
               <img class="image" :src="currentSong.image">
             </div>
           </div>
         </div>
+        <div class="middle-r" ref="lyricList" v-if="this.currentLyric"> <!--使用betterscroll 滚动歌词 -->
+          <div class="lyric-wrapper">
+            <div class="currentLyric">
+              <p class="text" ref="lyricLine" v-for="(text, index) in currentLyric.lines" v-bind:key="index" v-bind:class="{'current' : currentLine === index}">
+                {{text.txt}}
+              </p>
+            </div>
+          </div>
+        </div>
+
       </div>
       <div class="bottom">
         <div class="progress-wrapper">
@@ -82,10 +92,14 @@
 import {mapGetters, mapMutations} from 'vuex'
 // import animation from 'create-keyframe-animation'
 import progressbar from 'components/progressbar/progress-bar.vue'
+import BScroll from 'better-scroll'
+import Lyric from 'lyric-parser'
 export default {
   data () {
     return {
-      currentTime: 0
+      currentTime: 0,
+      currentLyric: null,
+      currentLine: -1
     }
   },
   computed: {
@@ -170,7 +184,15 @@ export default {
         this.randomPlaylist()
       } else if (this.mode === 2) {
         this.setPlayMode(0)
-        this.setPlayList(this.sequencelist)
+        for (let i = 0; i < this.sequencelist.length; i++) {
+          if (this.sequencelist[i] === this.currentSong) {
+            // 这里改变模式需要重新计算index， 因为currentsong是有plyalist和index计算出来的
+            // 避免切换歌曲
+            this.setPlayList(this.sequencelist)
+            this.setCurrentIndex(i)
+            return
+          }
+        }
       }
     },
     controlPlayTime (time) {
@@ -189,6 +211,10 @@ export default {
       }
     },
     next () {
+      if (this.currentLyric) {
+        this.currentLyric.stop()
+      }
+
       this.loopmode()
       if (this.mode === 2) {
         this.randomPlaylist()
@@ -201,6 +227,9 @@ export default {
       }
     },
     prev () {
+      if (this.currentLyric) {
+        this.currentLyric.stop()
+      }
       // 控制上一首
       this.loopmode()
       if (this.mode === 2) {
@@ -226,7 +255,33 @@ export default {
       setPlayList: 'SET_PLAY_LIST'
     }),
     togglePlaying () {
+      // 设置过去播放状态
       this.setplayState(!this.playState)
+      // 设置歌词播放状态
+      if (this.currentLyric) {
+        this.currentLyric.toggelePlay()
+      }
+    },
+    getLyric () {
+      this.currentSong.getlyric().then((lyric) => {
+        this.currentLyric = new Lyric(lyric, this.handleLyric)
+        if (this.playState) {
+          this.currentLyric.play()
+        }
+        this._initlyricScroll()
+      })
+    },
+    handleLyric ({lineNum, txt}) {
+      this.currentLine = lineNum
+      if (this.currentLine > 7) {
+        let scrollDom = this.$refs.lyricLine[lineNum - 7]
+        this.lyricScroll.scrollToElement(scrollDom, 400)
+      }
+    },
+    _initlyricScroll () { // 初始化 歌词滚动
+      this.$nextTick(() => {
+        this.lyricScroll = new BScroll(this.$refs.lyricList, {})
+      })
     }
   },
   filters: {
@@ -259,6 +314,7 @@ export default {
       }
     },
     currentSong () {
+      // 切换歌曲 清空上首歌的定时器
       if (this.$refs.playprogressbar && this.$refs.playprogressbar.progressRun) {
         this.$refs.playprogressbar.progressStop()
       }
@@ -266,7 +322,8 @@ export default {
         let promise = this.$refs.audio.play()
         promise && promise.catch(function (reseon) {
         })
-        this.currentSong.getlyric()
+        // 获取歌词
+        this.getLyric()
       })
       this.setplayState(true)
     },

@@ -10,7 +10,7 @@
 </template>
 <script type="text/ecmascript-6">
 import {mapGetters} from 'vuex'
-const BARWAPPERWIDTH = 13
+// const BARWAPPERWIDTH = 13
 export default {
   data () {
     return {
@@ -48,7 +48,7 @@ export default {
   mounted () {
     this.$nextTick(() => {
       // 初始化相关参数信息
-      let domWidth = document.documentElement.getBoundingClientRect().width
+      // let domWidth = document.documentElement.getBoundingClientRect().width
       // btn实际跑的距离
       // let btnrunlength = (domWidth - BARWAPPERWIDTH * 2) / domWidth
       this.barLength = this.$refs.progressBar.offsetWidth

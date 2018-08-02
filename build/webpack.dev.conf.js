@@ -66,6 +66,12 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           //     ret = JSON.parse(matches[1])
           //   }
           // }
+          if (typeof ret === 'string') {
+            let start = ret.indexOf('{')
+            let stop = ret.indexOf('}')
+            ret = ret.substring(start, stop + 1)
+            ret = JSON.parse(ret)
+          }
           res.json(ret)
         }).catch((e) => {
           console.log(e)
