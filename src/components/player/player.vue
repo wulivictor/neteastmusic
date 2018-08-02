@@ -1,94 +1,98 @@
 <template>
   <div class="player" v-show="playlist.length>0">
     <transition name="normal">
-    <div class="normal-player" v-show="fullScreen">
-      <div class="background">
-        <img :src="currentSong.image" width="100%" height="100%">
-      </div>
-      <div class="top">
-        <div class="back" @click="back()">
-          <i class="icon-back"></i>
+      <div class="normal-player" v-show="fullScreen">
+        <div class="background">
+          <img :src="currentSong.image" width="100%" height="100%">
         </div>
-        <h1 class="title" v-html="currentSong.name"></h1>
-        <h2 class="subtitle" v-html="currentSong.singer"></h2>
-      </div>
-      <div class="middle"
-           @touchstart="ontouchstart()"
-           @touchmove="ontouchmove()">
-        <div class="middle-l" ref="middleL" v-show="playUI">
-          <div class="cd-wrapper" ref="cdWrapper">
-            <div class="cd" :class="playState ? 'play' : 'pause'">
-              <img class="image" :src="currentSong.image">
+        <div class="top">
+          <div class="back" @click="back()">
+            <i class="icon-back"></i>
+          </div>
+          <h1 class="title" v-html="currentSong.name"></h1>
+          <h2 class="subtitle" v-html="currentSong.singer"></h2>
+        </div>
+        <div class="middle"
+             @touchstart="ontouchstart()"
+             @touchmove="ontouchmove()">
+          <transition name="fade">
+            <div class="middle-l" ref="middleL" v-show="playUI">
+              <div class="cd-wrapper" ref="cdWrapper">
+                <div class="cd" :class="playState ? 'play' : 'pause'">
+                  <img class="image" :src="currentSong.image">
+                </div>
+              </div>
+            </div>
+          </transition>
+          <transition name="fade">
+            <div class="middle-r" ref="lyricList" v-if="this.currentLyric" v-show="!playUI"> <!--使用betterscroll 滚动歌词 -->
+              <div class="lyric-wrapper">
+                <div class="currentLyric">
+                  <p class="text" ref="lyricLine" v-for="(text, index) in currentLyric.lines" v-bind:key="index" v-bind:class="{'current' : currentLine === index}">
+                    {{text.txt}}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </transition>
+        </div>
+        <div class="bottom">
+          <div class="dot-wrapper">
+            <div class="dot" v-bind:class="{'active':playUI}"></div>
+            <div class="dot" v-bind:class="{'active':!playUI}"></div>
+          </div>
+          <div class="progress-wrapper">
+            <span class="time time-l">{{currentTime | filtertime}}</span>
+            <div class="progress-bar-wrapper">
+              <progressbar :currentPlayTime="currentTime"
+                           :durationTime="currentSong.duration"
+                           :playState="playState"
+                           :currentSong = "currentSong"
+                           v-if="currentTime"
+                           @controlPlayTime="controlPlayTime"
+                           ref="playprogressbar"></progressbar>
+            </div>
+            <span class="time time-r">{{currentSong.duration | filtertime}}</span>
+          </div>
+          <div class="operators">
+            <div class="icon i-left">
+              <i @click="switchPlayMode()" :class="changeModeIcon"></i>
+            </div>
+            <div class="icon i-left">
+              <i class="icon-prev" @click="prev()"></i>
+            </div>
+            <div class="icon i-center">
+              <i @click="togglePlaying" :class="playState ? 'icon-pause' : 'icon-play'"></i>
+            </div>
+            <div class="icon right">
+              <i class="icon-next" @click="next()"></i>
+            </div>
+            <div class="icon right">
+              <i class="icon icon-not-favorite"></i>
             </div>
           </div>
         </div>
-        <div class="middle-r" ref="lyricList" v-if="this.currentLyric" v-show="!playUI"> <!--使用betterscroll 滚动歌词 -->
-          <div class="lyric-wrapper">
-            <div class="currentLyric">
-              <p class="text" ref="lyricLine" v-for="(text, index) in currentLyric.lines" v-bind:key="index" v-bind:class="{'current' : currentLine === index}">
-                {{text.txt}}
-              </p>
-            </div>
-          </div>
+      </div>
+    </transition>
+    <transition name="mini">
+      <div class="mini-player" v-show="!fullScreen" @click.stop="into()">
+        <div class="icon">
+          <img width="40" height="40" :src="currentSong.image" :class="playState ? 'play' : 'pause'">
+        </div>
+        <div class="text">
+          <h2 class="name" v-html="currentSong.name"></h2>
+          <p class="desc" v-html="currentSong.singer"></p>
+        </div>
+        <div class="control">
+          <i @click.stop="togglePlaying" :class="miniicon"></i>
+        </div>
+        <div class="control">
+          <i class="icon-playlist"></i>
         </div>
       </div>
-      <div class="bottom">
-        <div class="dot-wrapper">
-          <div class="dot" v-bind:class="{'active':playUI}"></div>
-          <div class="dot" v-bind:class="{'active':!playUI}"></div>
-        </div>
-        <div class="progress-wrapper">
-          <span class="time time-l">{{currentTime | filtertime}}</span>
-          <div class="progress-bar-wrapper">
-            <progressbar :currentPlayTime="currentTime"
-                         :durationTime="currentSong.duration"
-                         :playState="playState"
-                         :currentSong = "currentSong"
-                         v-if="currentTime"
-                         @controlPlayTime="controlPlayTime"
-                         ref="playprogressbar"></progressbar>
-          </div>
-          <span class="time time-r">{{currentSong.duration | filtertime}}</span>
-          </div>
-        <div class="operators">
-          <div class="icon i-left">
-            <i @click="switchPlayMode()" :class="changeModeIcon"></i>
-          </div>
-          <div class="icon i-left">
-            <i class="icon-prev" @click="prev()"></i>
-          </div>
-          <div class="icon i-center">
-            <i @click="togglePlaying" :class="playState ? 'icon-pause' : 'icon-play'"></i>
-          </div>
-          <div class="icon right">
-            <i class="icon-next" @click="next()"></i>
-          </div>
-          <div class="icon right">
-            <i class="icon icon-not-favorite"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-  </transition>
-  <transition name="mini">
-    <div class="mini-player" v-show="!fullScreen" @click.stop="into()">
-      <div class="icon">
-        <img width="40" height="40" :src="currentSong.image" :class="playState ? 'play' : 'pause'">
-      </div>
-      <div class="text">
-        <h2 class="name" v-html="currentSong.name"></h2>
-        <p class="desc" v-html="currentSong.singer"></p>
-      </div>
-      <div class="control">
-        <i @click.stop="togglePlaying" :class="miniicon"></i>
-      </div>
-      <div class="control">
-        <i class="icon-playlist"></i>
-      </div>
-    </div>
-  </transition>
+    </transition>
     <audio :src="currentSong.url" ref="audio" @timeupdate="getCurrentTime"></audio>
-</div>
+  </div>
 </template>
 <script type="text/ecmascript-6">
 // sequence: 0,
@@ -603,4 +607,13 @@ export default {
       transform: rotate(0)
     100%
       transform: rotate(360deg)
+
+
+
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+  }
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
+  }
 </style>
