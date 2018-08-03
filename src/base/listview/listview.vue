@@ -143,7 +143,6 @@ export default {
       }
       this.AnchorHeightList = heightListArray
     }
-
   }
 }
 </script>
