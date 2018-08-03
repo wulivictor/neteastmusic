@@ -93,7 +93,7 @@ export default {
         this.checkloaded = true
       }
     },
-    _handleDiss () {
+    _handleDiss (item) {
       this.bgimage = item.picUrl
       this.title = item.songListDesc
       getRecommendDiss(item.id).then((res) => {
@@ -111,7 +111,7 @@ export default {
     },
     selectItem (item) {
       // 处理子路由需要的数据
-      this._handleDiss()
+      this._handleDiss(item)
       // 跳转子路由
       this.$router.push({
         path: `recommend/${item.id}`
