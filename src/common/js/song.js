@@ -31,6 +31,8 @@ export default class Song {
     })
   }
 }
+
+// the page of singer create song class
 export function createSong (musicData, songkey, filename) {
   return new Song({
     id: musicData.songid,
@@ -44,7 +46,20 @@ export function createSong (musicData, songkey, filename) {
   })
 }
 
-// 处理歌手信息
+// the page of recommend create song class
+export function createRecommend (preSong) {
+  return new Song({
+    id: preSong.id,
+    mid: preSong.mid,
+    singer: filterSinger(preSong.singer),
+    name: preSong.name,
+    album: preSong.album,
+    duration: preSong.interval,
+    image: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${preSong.album.mid}.jpg?max_age=2592000`,
+    url: `http://ws.stream.qqmusic.qq.com/C100${preSong.mid}.m4a?fromtag=0&guid=126548448`
+  })
+}
+
 function filterSinger (list) {
   if (!list) {
     return

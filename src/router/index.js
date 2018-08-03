@@ -5,13 +5,20 @@ import Search from '../../src/components/search/search.vue'
 import Singer from '../../src/components/singer/singer.vue'
 import Rank from '../../src/components/rank/rank.vue'
 import SingerDetail from '../../src/components/singer-detail/singer-detail.vue'
+import MusicList from '../../src/components/music-list/music-list.vue'
 Vue.use(Router)
 
 export default new Router({
   routes: [
     {
       path: '/recommend',
-      component: Recommend
+      component: Recommend,
+      children: [
+        {
+          path: ':id',
+          component: MusicList
+        }
+      ]
     },
     {
       path: '/search',

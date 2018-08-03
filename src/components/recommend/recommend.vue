@@ -30,27 +30,37 @@
         <loading></loading>
       </div>
     </scroll>
-    <router-view></router-view>
+    <router-view :bgimage="bgimage"
+                 :title="title"
+                 :rank="rank">
+    </router-view>
   </div>
 </template>
-
 <script type="text/ecmascript-6">
 import {getRecommand} from 'api/recommand'
 import {ERROR_OK} from 'api/common'
 import slider from 'base/slider.vue'
 import scroll from 'base/scroll.vue'
 import loading from 'base/loading/loading.vue'
+import {getRecommendDiss} from '../../api/recommand'
+import musiclist from 'components/music-list/music-list.vue'
+import {mapMutations} from 'vuex'
+import {createRecommend} from '../../common/js/song.js'
 export default {
   name: 'Recommend',
   components: {
     slider,
     scroll,
-    loading
+    loading,
+    musiclist
   },
   data () {
     return {
       recommends: [],
-      songList: []
+      songList: [],
+      bgimage: '',
+      title: '',
+      rank: false
     }
   },
   created () {
@@ -60,6 +70,9 @@ export default {
     }, 500)
   },
   methods: {
+    ...mapMutations({
+      setSong: 'SET_SONGS'
+    }),
     _getcommand () {
       getRecommand().then((res) => {
         if (res.code === ERROR_OK) {
@@ -79,6 +92,30 @@ export default {
         this.$refs.scroll.refresh()
         this.checkloaded = true
       }
+    },
+    _handleDiss () {
+      this.bgimage = item.picUrl
+      this.title = item.songListDesc
+      getRecommendDiss(item.id).then((res) => {
+        res = res.data
+        if (res.code === ERROR_OK) {
+          let recommendSonglist = res.cdlist[0].songlist
+          let songlist = []
+          recommendSonglist.forEach((ele, index) => {
+            let song = createRecommend(ele)
+            songlist.push(song)
+          })
+          this.setSong(songlist)
+        }
+      })
+    },
+    selectItem (item) {
+      // 处理子路由需要的数据
+      this._handleDiss()
+      // 跳转子路由
+      this.$router.push({
+        path: `recommend/${item.id}`
+      })
     }
   }
 }

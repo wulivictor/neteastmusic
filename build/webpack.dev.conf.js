@@ -48,6 +48,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     proxy: config.dev.proxyTable,
     quiet: true, // necessary for FriendlyErrorsPlugin
     before(apiRoutes) {
+      // get lyric
       apiRoutes.get('/api/lyric', function (req, res) {
         let url = 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg'
         axios.get(url, {
@@ -58,14 +59,29 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           params: req.query
         }).then((response) => {
           let ret = response.data
-          // if (typeof ret === 'string') {
-          //   /* \w:字母、数字、下划线   中间就是以大括号开始，小括号结束且不为（ 、）的字符，一个和多个*/
-          //   let reg = /^\w+\(({[^()]+})\)$/ /*==> MusicJsonCallback({\"retcode\":0,\"code\":0,\"subcode\...."})*/
-          //   let matches = ret.match(reg)
-          //   if (matches) {
-          //     ret = JSON.parse(matches[1])
-          //   }
-          // }
+          if (typeof ret === 'string') {
+            let start = ret.indexOf('{')
+            let stop = ret.indexOf('}')
+            ret = ret.substring(start, stop + 1)
+            ret = JSON.parse(ret)
+          }
+          res.json(ret)
+        }).catch((e) => {
+          console.log(e)
+        })
+      })
+
+      // get recommend cd inf
+      apiRoutes.get('/api/recommendDiss', function (req, res) {
+        let url = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg'
+        axios.get(url, {
+          headers: {
+            referer: 'https://c.y.qq.com/',
+            host: 'c.y.qq.com'
+          },
+          params: req.query
+        }).then((response) => {
+          let ret = response.data
           if (typeof ret === 'string') {
             let start = ret.indexOf('{')
             let stop = ret.indexOf('}')

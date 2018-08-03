@@ -33,6 +33,9 @@ export default {
       this.$emit('select', song, index)
     },
     desc (song) {
+      if (typeof (song.album) === 'object') {
+        return `${song.singer}   ${song.album.name}`
+      }
       return `${song.singer}   ${song.album}`
     }
   }

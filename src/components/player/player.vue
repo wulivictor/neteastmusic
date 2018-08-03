@@ -22,6 +22,12 @@
                   <img class="image" :src="currentSong.image">
                 </div>
               </div>
+
+              <div class="miniLyricWrapper">
+                <div class="miniLyric">
+                  {{miniLyric}}
+                </div>
+              </div>
             </div>
           </transition>
           <transition name="fade">
@@ -110,6 +116,7 @@ export default {
       currentLyric: null,
       currentLine: -1,
       playUI: true,
+      miniLyric: '',
       touchPos: {
         touchstart: 0,
         touchmove: 0
@@ -295,6 +302,7 @@ export default {
       })
     },
     handleLyric ({lineNum, txt}) {
+      this.miniLyric = txt
       this.currentLine = lineNum
       if (this.currentLine > 7) {
         let scrollDom = this.$refs.lyricLine[lineNum - 7]
@@ -355,6 +363,10 @@ export default {
       // 切换歌曲 清空上首歌的定时器
       if (this.$refs.playprogressbar && this.$refs.playprogressbar.progressRun) {
         this.$refs.playprogressbar.progressStop()
+      }
+      // 切换歌曲 清空上首歌的歌词任务
+      if (this.currentLyric) {
+        this.currentLyric.stop()
       }
       this.$nextTick(() => {
         let promise = this.$refs.audio.play()
@@ -619,4 +631,19 @@ export default {
   .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
     opacity: 0;
   }
+
+  .miniLyricWrapper
+    height: 10%;
+    width: 100%;
+    position: absolute;
+    margin-top: 20%;
+    padding: 0 10%;
+    box-sizing border-box
+    .miniLyric
+      margin: 0 auto
+      overflow: hidden
+      text-align: center
+      line-height: 32px
+      font-size: $font-size-medium
+      color: $color-text
 </style>
