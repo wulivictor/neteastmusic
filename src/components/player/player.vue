@@ -23,7 +23,7 @@
                 </div>
               </div>
 
-              <div class="miniLyricWrapper">
+              <div class="miniLyricWrapper" v-if="showminiLyric">
                 <div class="miniLyric">
                   {{miniLyric}}
                 </div>
@@ -117,6 +117,7 @@ export default {
       currentLine: -1,
       playUI: true,
       miniLyric: '',
+      showminiLyric: false,
       touchPos: {
         touchstart: 0,
         touchmove: 0
@@ -300,6 +301,10 @@ export default {
         }
         this._initlyricScroll()
       })
+      // 屏幕太小，隐藏
+      if (window.innerHeight >= 600) {
+        this.showminiLyric = true
+      }
     },
     handleLyric ({lineNum, txt}) {
       this.miniLyric = txt

@@ -23,6 +23,10 @@ export default {
     listenScroll: {
       type: Boolean,
       default: true
+    },
+    refreshDelay: {
+      type: Number,
+      default: 1000
     }
   },
   mounted () {

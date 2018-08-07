@@ -1,15 +1,15 @@
 <template>
   <div class="search">
     <div class="search-box-wrapper">
-      <!--<search-box ref="searchBox" @query="onQueryChange"></search-box>-->
+      <search-box ref="searchBox" @query="onQueryChange"></search-box>
     </div>
     <div ref="shortcutWrapper" class="shortcut-wrapper" v-show="!query">
-      <scroll :refreshDelay="refreshDelay" ref="shortcut" class="shortcut" :data="shortcut">
+      <scroll class="shortcut" :refreshDelay="refreshDelay" ref="shortcut" :data="shortcut"><!-- 快捷搜索-->
         <div>
           <div class="hot-key">
             <h1 class="title">热门搜索</h1>
             <ul>
-              <li @click="addQuery(item.k)" class="item" v-for="item in hotKey">
+              <li @click="addQuery(item.k)" class="item" v-for="(item, index) in hotKey" v-bind:key="index">
                 <span>{{item.k}}</span>
               </li>
             </ul>
@@ -17,7 +17,7 @@
           <div class="search-history" v-show="searchHistory.length">
             <h1 class="title">
               <span class="text">搜索历史</span>
-              <span @click="showConfirm" class="clear">
+              <span  class="clear"><!--@click="showConfirm"-->
                 <i class="icon-clear"></i>
               </span>
             </h1>
@@ -36,10 +36,38 @@
 
 <script type="text/ecmascript-6">
 import scroll from '../../base/scroll.vue'
+import searchbox from 'base/search-box/search-box.vue'
+import {getHotKey} from '../../api/search.js'
+import {ERROR_OK} from '../../api/common'
+import {searchmixin} from '../../common/js/mixin.js'
 
 export default {
+  mixins: [searchmixin],
+  data () {
+    return {
+      hotKey: []
+    }
+  },
+  created () {
+    this._getHotKey()
+  },
   components: {
-    scroll
+    scroll,
+    'search-box': searchbox
+  },
+  methods: {
+    _getHotKey () {
+      getHotKey().then((res) => {
+        if (res.code === ERROR_OK) {
+          this.hotKey = res.data.hotkey
+        }
+      })
+    }
+  },
+  computed: {
+    shortcut () {
+      return this.hotKey.concat(this.searchHistory)
+    }
   }
 }
 </script>
