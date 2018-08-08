@@ -3,3 +3,5 @@ export const playMode = {
   loop: 1,
   random: 2
 }
+
+export const TYPE_SINGER = 'singer'
