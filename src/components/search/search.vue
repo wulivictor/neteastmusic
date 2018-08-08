@@ -14,14 +14,14 @@
               </li>
             </ul>
           </div>
-          <div class="search-history" v-show="searchHistory.length">
+          <div class="search-history" v-show="searchHistory.length"> <!--这是搜索历史记录 -->
             <h1 class="title">
               <span class="text">搜索历史</span>
-              <span  class="clear"><!--@click="showConfirm"-->
+              <span  class="clear" @click="showConfirm">
                 <i class="icon-clear"></i>
               </span>
             </h1>
-            <!--<search-list @delete="deleteSearchHistory" @select="addQuery" :searches="searchHistory"></search-list>-->
+            <search-list :searches="searchHistory" @select="selectSearchHistory" @delete="deleteSearchHistory"></search-list> <!-- 选中搜索记录和删除搜索记录的操作-->
           </div>
         </div>
       </scroll>
@@ -40,6 +40,7 @@ import searchbox from 'base/search-box/search-box.vue'
 import {getHotKey} from '../../api/search.js'
 import {ERROR_OK} from '../../api/common'
 import {searchmixin} from '../../common/js/mixin.js'
+import searchlist from '../../base/search-list/search-list.vue'
 
 export default {
   mixins: [searchmixin],
@@ -53,7 +54,8 @@ export default {
   },
   components: {
     scroll,
-    'search-box': searchbox
+    'search-box': searchbox,
+    'search-list': searchlist
   },
   methods: {
     _getHotKey () {
@@ -62,6 +64,9 @@ export default {
           this.hotKey = res.data.hotkey
         }
       })
+    },
+    showConfirm () { // 清楚搜索记录
+      this.setSearchHistory([])
     }
   },
   computed: {
