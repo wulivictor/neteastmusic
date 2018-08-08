@@ -26,11 +26,11 @@
         </div>
       </scroll>
     </div>
-    <div class="search-result" v-show="query" ref="searchResult">
-      <!--<suggest @listScroll="blurInput" @select="saveSearch" ref="suggest" :query="query"></suggest>-->
+    <div class="search-result" v-show="query" ref="searchResult"> <!--搜索结果 -->
+      <suggest ref="suggest" :query="query" @selectSearchResult="selectSearchResult"></suggest><!--@listScroll="blurInput" @select="saveSearch" -->
     </div>
     <!--<confirm ref="confirm" @confirm="clearSearchHistory" text="是否清空所有搜索历史" confirmBtnText="清空"></confirm>-->
-    <router-view></router-view>
+    <router-view></router-view> <!--如果是歌曲直接播放，如果是歌手直接跳转到歌手详情页面 -->
   </div>
 </template>
 
@@ -41,6 +41,8 @@ import {getHotKey} from '../../api/search.js'
 import {ERROR_OK} from '../../api/common'
 import {searchmixin} from '../../common/js/mixin.js'
 import searchlist from '../../base/search-list/search-list.vue'
+import suggest from '../../components/suggest/suggest.vue'
+import {TYPE_SINGER} from '../../common/js/config'
 
 export default {
   mixins: [searchmixin],
@@ -55,9 +57,21 @@ export default {
   components: {
     scroll,
     'search-box': searchbox,
-    'search-list': searchlist
+    'search-list': searchlist,
+    suggest
   },
   methods: {
+    selectSearchResult (item) {
+      if (item.type === TYPE_SINGER) {
+        // 跳转路由
+        this.$router.push({
+          path: `search/${item.singermid}`
+        })
+      } else {
+        // 播放歌曲
+
+      }
+    },
     _getHotKey () {
       getHotKey().then((res) => {
         if (res.code === ERROR_OK) {

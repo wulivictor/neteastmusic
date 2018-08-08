@@ -93,6 +93,32 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           console.log(e)
         })
       })
+
+
+        // search song or singer
+        apiRoutes.get('/api/search', function (req, res) {
+          let url = 'https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp'
+          axios.get(url, {
+            headers: {
+              referer: 'https://c.y.qq.com/',
+              host: 'c.y.qq.com'
+            },
+            params: req.query
+          }).then((response) => {
+            debugger
+            let ret = response.data
+            if (typeof ret === 'string') {
+              let start = ret.indexOf('(')
+              let stop = ret.indexOf(')')
+              ret = ret.substring(start + 1, stop)
+              ret = JSON.parse(ret)
+            }
+            res.json(ret)
+          }).catch((e) => {
+            console.log(e)
+          })
+        })
+
     },
     watchOptions: {
       poll: config.dev.poll,

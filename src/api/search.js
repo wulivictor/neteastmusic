@@ -1,4 +1,5 @@
 import jsonp from '../common/js/jsonpHandler.js'
+import axios from 'axios'
 import {commonParam, options} from '../api/common.js'
 
 export function getHotKey () {
@@ -13,13 +14,12 @@ export function getHotKey () {
   return jsonp(url, data, options)
 }
 
-export function search (query, page, zhida, perpage) {
-  const url = 'https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp'
+export function search (query, page, zhida, perpage) { // 这里不能使用jsonp
+  const url = '/api/search'
 
   const data = Object.assign({}, commonParam, {
     w: query,
     p: page,
-    perpage,
     n: perpage,
     catZhida: zhida ? 1 : 0,
     zhidaqu: 1,
@@ -32,7 +32,23 @@ export function search (query, page, zhida, perpage) {
     uin: 0,
     needNewCode: 1,
     platform: 'h5'
+    // g_tk: 5381,
+    // inCharest: 'utf-8',
+    // outCharest: 'utf-8',
+    // notice: 0,
+    // format: 'json'
   })
 
-  return jsonp(url, data, options)
+  return new Promise((resolve, reject) => {
+    axios.get(url, {
+      params: data
+    }).then((res) => {
+      res = res.data
+      if (res) {
+        resolve(res)
+      } else {
+        reject(404)
+      }
+    })
+  })
 }
