@@ -1,4 +1,4 @@
-import {mapGetters, mapMutations} from 'vuex'
+import {mapGetters, mapMutations,mapActions} from 'vuex'
 export const searchmixin = {
   data () {
     return {
@@ -8,13 +8,18 @@ export const searchmixin = {
   },
   computed: {
     ...mapGetters([
-      'searchHistory'
+      'searchHistory',
+      'searchPlay'
     ])
   },
   methods: {
     ...mapMutations({
-      setSearchHistory: 'SET_SEARCH_HISTORY'
+      setSearchHistory: 'SET_SEARCH_HISTORY',
+      setSinger: 'SET_SINGER'
     }),
+    ...mapActions([
+      'selectPlay'
+    ]),
     onQueryChange (newQuery) {
       this.query = newQuery
       if (newQuery) {
@@ -47,8 +52,8 @@ export const searchmixin = {
           arrayIndex = index
         }
       })
-      if (arrayIndex) {
-        ret.slice(arrayIndex, 1)
+      if (typeof (arrayIndex) === 'number') {
+        ret.splice(arrayIndex, 1)
       }
       return ret
     }

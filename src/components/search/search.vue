@@ -4,7 +4,7 @@
       <search-box ref="searchBox" @query="onQueryChange"></search-box>
     </div>
     <div ref="shortcutWrapper" class="shortcut-wrapper" v-show="!query">
-      <scroll class="shortcut" :refreshDelay="refreshDelay" ref="shortcut" :data="shortcut"><!-- 快捷搜索-->
+      <scroll class="shortcut" :refreshDelay="refreshDelay" ref="shortcut" :data="shortcut" :type=3><!-- 快捷搜索-->
         <div>
           <div class="hot-key">
             <h1 class="title">热门搜索</h1>
@@ -35,7 +35,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import scroll from '../../base/scroll.vue'
+import scroll from 'base/scroll.vue'
 import searchbox from 'base/search-box/search-box.vue'
 import {getHotKey} from '../../api/search.js'
 import {ERROR_OK} from '../../api/common'
@@ -43,7 +43,7 @@ import {searchmixin} from '../../common/js/mixin.js'
 import searchlist from '../../base/search-list/search-list.vue'
 import suggest from '../../components/suggest/suggest.vue'
 import {TYPE_SINGER} from '../../common/js/config'
-
+import Singer from '../../common/js/singer.js'
 export default {
   mixins: [searchmixin],
   data () {
@@ -63,12 +63,29 @@ export default {
   methods: {
     selectSearchResult (item) {
       if (item.type === TYPE_SINGER) {
+        // 先处理歌手信息，复用singerdetail组件需要这个
+        let id = item.singermid
+        let name = item.singername
+        let searchSinger = new Singer({id, name})
+        this.setSinger(searchSinger)
         // 跳转路由
         this.$router.push({
           path: `search/${item.singermid}`
         })
       } else {
-        // 播放歌曲
+        // play song and set data
+        let playlistIndex
+        this.searchPlay.forEach((ele, index) => {
+          if (ele.id === item.id) {
+            playlistIndex = index
+          }
+        })
+        this.selectPlay({
+          list: this.searchPlay,
+          index: playlistIndex
+        })
+
+        // push route
 
       }
     },

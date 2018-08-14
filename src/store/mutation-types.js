@@ -17,3 +17,5 @@ export const SET_MODE = 'SET_MODE'
 export const SET_CURRENT_INDEX = 'SET_CURRENT_INDEX'
 
 export const SET_SEARCH_HISTORY = 'SET_SEARCH_HISTORY'
+
+export const SET_SEARCH_PLAY = 'SET_SEARCH_PLAY'

@@ -14,6 +14,6 @@ export default new Vuex.Store({
   getters,
   state,
   mutations,
-  strict: debug,
+  // strict: debug, // 修改mutation的状态。不管是不是有mutation改变的，都会报错，便于调试
   plugins: debug ? [createLogger()] : []
 })

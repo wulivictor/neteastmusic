@@ -8,9 +8,9 @@
           <!--@beforeScroll="listScroll"-->
 
     <ul class="suggest-list">
-      <li class="suggest-item" v-for="(item, index) in result" v-bind:key="index" @click="selectItem(item)">
+      <li class="suggest-item" v-for="(item, index) in result" v-bind:key="index" @click="selectItem(item, index)">
         <div class="icon">
-          <i :class="getIconCls(item)"></i><!---->
+          <i :class="getIconCls(item)"></i>
         </div>
         <div class="name">
           <p class="text" v-html="getDisplayName(item)"></p>
@@ -30,6 +30,9 @@ import scroll from '../../base/scroll.vue'
 import {ERROR_OK} from '../../api/common'
 import {createSong} from '../../common/js/song'
 import {TYPE_SINGER} from '../../common/js/config'
+import {mapMutations, mapGetters} from 'vuex'
+import Singer from '../../common/js/singer.js'
+import {searchPlay} from "../../store/getter";
 
 const perpage = 20
 const showSinger = true
@@ -50,8 +53,16 @@ export default {
       default: ''
     }
   },
+  computed: {
+    ...mapGetters([
+      searchPlay
+    ])
+  },
   methods: {
-    selectItem (item) {
+    ...mapMutations({
+      setsearchPlay: 'SET_SEARCH_PLAY'
+    }),
+    selectItem (item, index) {
       this.$emit('selectSearchResult', item)
     },
     getDisplayName (item) {
@@ -65,7 +76,19 @@ export default {
       search(this.query, this.page, showSinger, perpage).then((res) => {
         if (res.code === ERROR_OK) {
           this.result = this._genResult(res.data)
-          // console.log(this.result)
+
+          // 将搜索的歌曲先存下来，一边播放使用
+          let searchSongs = []
+          let searchPlay = {}
+          this.result.forEach((ele, index) => {
+            if (!ele.type) {
+              searchSongs.push(ele)
+            }
+          })
+          if (searchSongs.length > 0) {
+            searchPlay = searchSongs
+            this.setsearchPlay(searchPlay)
+          }
         }
       })
     },

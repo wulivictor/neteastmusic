@@ -20,6 +20,8 @@ export const currentIndex = state => state.currentIndex
 
 export const searchHistory = state => state.searchHistory
 
+export const searchPlay = state => state.searchPlay
+
 // 通过播放列表和当前播放索引获取当前播放的歌曲
 export const currentSong = (state) => {
   return state.playlist[state.currentIndex] || {}

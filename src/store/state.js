@@ -12,6 +12,7 @@ const state = {
   sequencelist: [], // 这是顺序列表
   mode: playMode.sequence,
   currentIndex: -1, // 当前播放歌曲在sequence中的索引
-  searchHistory: [] // 搜索历史记录
+  searchHistory: [], // 搜索历史记录
+  searchPlay: [] // 搜索到的歌曲.,便于播放
 }
 export default state
