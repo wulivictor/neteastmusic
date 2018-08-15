@@ -17,11 +17,10 @@
           <p class="text" v-html="getDisplayName(item)"></p>
         </div>
       </li>
-      <!--<loading v-show="hasMore" title=""></loading>-->
+      <loading v-show="hasMore" title="还有更多搜索结果"></loading>
     </ul>
-    <div  class="no-result-wrapper" v-if="!result.length">
-      抱歉，暂无搜索结果
-      <!--<no-result title="抱歉，暂无搜索结果"></no-result>-->
+    <div  class="no-result-wrapper" v-show="noresult">
+      <p class="no-result">抱歉，暂无搜索结果</p>
     </div>
   </scroll>
 </template>
@@ -34,19 +33,23 @@ import {createSong} from '../../common/js/song'
 import {TYPE_SINGER} from '../../common/js/config'
 import {mapMutations, mapGetters} from 'vuex'
 import {searchPlay} from '../../store/getter'
+import loading from '../../base/loading/loading.vue'
 
 const perpage = 20
 const showSinger = true
 export default {
   components: {
-    scroll
+    scroll,
+    loading
   },
   data () {
     return {
       result: [],
       page: 1,
       perpage: '',
-      pullup: true
+      pullup: true,
+      noresult: false,
+      hasMore: false
     }
   },
   props: {
@@ -75,10 +78,13 @@ export default {
       }
     },
     search () {
+      this.noresult = false
       search(this.query, this.page, showSinger, perpage).then((res) => {
         if (res.code === ERROR_OK) {
           this.result = this._genResult(res.data)
-
+          if (!this.result.length) {
+            this.noresult = true
+          }
           // 将搜索的歌曲先存下来，一边播放使用
           let searchSongs = []
           let searchPlay = {}
@@ -121,6 +127,7 @@ export default {
       return ret
     },
     searchMore () {
+      this.hasMore = true
       // 上拉加载
       this.page++
       console.log(this.page)
@@ -129,6 +136,7 @@ export default {
           let ret = this._genResult(res.data)
           this.result = this.result.concat(ret)
           this.$refs.suggest.finishPullUp()
+          this.hasMore = false
         }
       })
     }
@@ -173,4 +181,7 @@ export default {
       width: 100%
       top: 50%
       transform: translateY(-50%)
+      .no-result
+        text-align center
+        vertical-align top
 </style>
