@@ -63,7 +63,6 @@ export default {
   methods: {
     selectSearchResult (item) {
       if (item.type === TYPE_SINGER) {
-        // 先处理歌手信息，复用singerdetail组件需要这个
         let id = item.singermid
         let name = item.singername
         let searchSinger = new Singer({id, name})

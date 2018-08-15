@@ -1,8 +1,9 @@
 <template>
   <scroll ref="suggest"
           class="suggest"
-          :data="result">
-          <!--:pullup="pullup"-->
+          :data="result"
+          :pullup="pullup"
+  @searchMore="searchMore">
           <!--:beforeScroll="beforeScroll"-->
           <!--@scrollToEnd="searchMore"-->
           <!--@beforeScroll="listScroll"-->
@@ -18,7 +19,8 @@
       </li>
       <!--<loading v-show="hasMore" title=""></loading>-->
     </ul>
-    <div  class="no-result-wrapper"><!--v-show="!hasMore && !result.length"-->
+    <div  class="no-result-wrapper" v-if="!result.length">
+      抱歉，暂无搜索结果
       <!--<no-result title="抱歉，暂无搜索结果"></no-result>-->
     </div>
   </scroll>
@@ -31,8 +33,7 @@ import {ERROR_OK} from '../../api/common'
 import {createSong} from '../../common/js/song'
 import {TYPE_SINGER} from '../../common/js/config'
 import {mapMutations, mapGetters} from 'vuex'
-import Singer from '../../common/js/singer.js'
-import {searchPlay} from "../../store/getter";
+import {searchPlay} from '../../store/getter'
 
 const perpage = 20
 const showSinger = true
@@ -44,7 +45,8 @@ export default {
     return {
       result: [],
       page: 1,
-      perpage: ''
+      perpage: '',
+      pullup: true
     }
   },
   props: {
@@ -117,6 +119,18 @@ export default {
         }
       })
       return ret
+    },
+    searchMore () {
+      // 上拉加载
+      this.page++
+      console.log(this.page)
+      search(this.query, this.page, showSinger, perpage).then((res) => {
+        if (res.code === ERROR_OK) {
+          let ret = this._genResult(res.data)
+          this.result = this.result.concat(ret)
+          this.$refs.suggest.finishPullUp()
+        }
+      })
     }
   },
   watch: {

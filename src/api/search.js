@@ -32,13 +32,7 @@ export function search (query, page, zhida, perpage) { // 这里不能使用json
     uin: 0,
     needNewCode: 1,
     platform: 'h5'
-    // g_tk: 5381,
-    // inCharest: 'utf-8',
-    // outCharest: 'utf-8',
-    // notice: 0,
-    // format: 'json'
   })
-
   return new Promise((resolve, reject) => {
     axios.get(url, {
       params: data
