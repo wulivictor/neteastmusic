@@ -51,8 +51,6 @@ export default {
       }
     })
   },
-  created () {
-  },
   methods: {
     _setSliderWidth () {
       this.children = this.$refs.sliderGroup.children
